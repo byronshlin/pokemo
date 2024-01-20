@@ -1,18 +1,89 @@
 package com.byronlin.pokemo.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.byronlin.pokemo.model.PokemonCollectionDisplayItem
 import com.byronlin.pokemo.model.PokemonDisplayItem
+import com.byronlin.pokemo.room.PokemonRoomHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel : ViewModel() {
 
+    private val INIT_TYPE_NUMBER = 6
 
     private val _collectionsLiveData: MutableLiveData<List<PokemonCollectionDisplayItem>> =
         MutableLiveData()
 
+    private val _pokemonTypesLiveData : MutableLiveData<List<String>> = MutableLiveData()
+
+    private val _visibleCollectionOfTypes : MutableLiveData<HashMap<String,List<PokemonCollectionDisplayItem>>> = MutableLiveData()
+
     val collectionsLiveData: LiveData<List<PokemonCollectionDisplayItem>> = _collectionsLiveData
+    val pokemonTypesLiveData : LiveData<List<String>> = _pokemonTypesLiveData
+
+    val visibleMainCollectionOfTypes : LiveData<HashMap<String,List<PokemonCollectionDisplayItem>>> = _visibleCollectionOfTypes
+
+    val _visibleTypes : MutableLiveData<List<String>> = MutableLiveData()
+
+    val visibleTypes : LiveData<List<String>> = _visibleTypes
+
+
+
+
+    fun initMainViews(context: Context){
+        viewModelScope.launch {
+            val types = withContext(Dispatchers.IO){
+                PokemonRoomHelper.obtainPokemonDatabase(context).queryDao().queryPokemonTypes()
+            }
+
+            _pokemonTypesLiveData.value = types
+            _visibleTypes.value = types.take(INIT_TYPE_NUMBER)
+
+           
+
+            _visibleTypes.value.map {
+                Pair(it, withContext(Dispatchers.IO){
+                })
+            }.toMap().let {
+                _visibleCollectionOfTypes.value = it as HashMap<String, List<PokemonCollectionDisplayItem>>
+            }
+        }
+    }
+
+    fun updateTypesOfCollections(context: Context) {
+        viewModelScope.launch {
+            val types = withContext(Dispatchers.IO){
+                PokemonRoomHelper.obtainPokemonDatabase(context).queryDao().queryPokemonTypes()
+            }
+            _pokemonTypesLiveData.value = types
+
+
+
+        }
+    }
+
+
+    fun updateMainCollections(context: Context){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                val dao = PokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
+                _visibleTypes.value?.map {
+                    Pair(it, dao.queryPokemonEntityListByType(it))
+                }
+            }
+        }
+    }
+
+
+
+
+
 
 
     fun updateCollections() {
