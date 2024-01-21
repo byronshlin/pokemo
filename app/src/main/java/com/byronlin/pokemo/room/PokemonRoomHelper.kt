@@ -15,7 +15,7 @@ object PokemonRoomHelper {
 
     @WorkerThread
     fun obtainPokemonDatabase(context: Context): PokemonRoomDatabase {
-        sCommonLibRoomDatabase?: synchronized(this){
+        sCommonLibRoomDatabase = sCommonLibRoomDatabase?: synchronized(this){
             sCommonLibRoomDatabase?: Room.databaseBuilder(
                 context.applicationContext,
                 PokemonRoomDatabase::class.java, PokemonRoomDatabase.DATABASE_NAME

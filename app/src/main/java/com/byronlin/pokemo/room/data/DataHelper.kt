@@ -1,16 +1,13 @@
 package com.byronlin.pokemo.room.data
 
 import com.byronlin.pokemo.room.entity.PokemonEntity
-import com.byronlin.pokemo.room.entity.PokemonTypesEntity
+import com.byronlin.pokemo.room.entity.PokemonTypesRelationshipEntity
 import com.byronlin.pokemo.room.entity.SpeciesDescriptionEntity
 import com.byronlin.pokemo.room.entity.SpeciesEntity
 
 object DataHelper {
     fun transferPokemonInfoListToWriteEntityInfo(pokemonInfoList: List<PokemonInfo>,
-                                                 speciesInfoList: List<SpeciesInfo>):
-            WriteEntityInfo {
-
-
+                                                 speciesInfoList: List<SpeciesInfo>): WriteEntityInfo {
         val speciesEntityList = speciesInfoList.map {
             SpeciesEntity(
                 id = it.id,
@@ -31,7 +28,7 @@ object DataHelper {
 
         val typesList = pokemonInfoList.flatMap { pokemonInfo ->
             pokemonInfo.types.map {
-                PokemonTypesEntity(
+                PokemonTypesRelationshipEntity(
                     idOfPokemon = pokemonInfo.id,
                     type = it
                 )

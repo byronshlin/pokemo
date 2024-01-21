@@ -1,24 +1,82 @@
 package com.byronlin.pokemo.repository
 
+import android.content.Context
 import android.net.Uri
+import androidx.annotation.WorkerThread
 import com.byronlin.pokemo.datasource.PokemonNetworkDataSource
+import com.byronlin.pokemo.room.PokemonRoomHelper
+import com.byronlin.pokemo.room.data.DataHelper
 import com.byronlin.pokemo.room.data.DescriptionInfo
 import com.byronlin.pokemo.room.data.PokemonInfo
+import com.byronlin.pokemo.room.data.PokemonResourceResult
 import com.byronlin.pokemo.room.data.SpeciesInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class PokemonResourceLoader {
 
     private val TAG = "PokemonResourceLoader"
     private val dataSource = PokemonNetworkDataSource()
 
-    fun loadResourceToLocal() {
-        val list = loadPokemonResource()
+    private val BATCH_COUNT = 20
+
+    private val MAX_SIZE = 151
+
+    @Volatile
+    private var stop = false
+
+    fun stop() {
+        stop = true
+    }
+
+    @WorkerThread
+    fun startLoadResourceToLocal(context: Context, callback: ((Boolean) -> Unit)? = null) {
+        stop = true
+        val queryDao = PokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
+        val updateDao = PokemonRoomHelper.obtainPokemonDatabase(context).updateDao()
+
+        val offset = queryDao.queryNext() ?: 0
+
+        if (offset > MAX_SIZE) {
+            callback?.invoke(true)
+            return
+        }
+
+        if (stop) {
+            callback?.invoke(false)
+            return
+        }
+        //start load
+        val pokemonResourceResult = loadPokemonResource(offset, BATCH_COUNT)
+        if (pokemonResourceResult == null) {
+            callback?.invoke(false)
+            return
+        }
+
+
+        val writeInfo = DataHelper.transferPokemonInfoListToWriteEntityInfo(
+            pokemonResourceResult.pokemonInfoList,
+            pokemonResourceResult.speciesInfoList
+        )
+        updateDao.loadToDatabase(writeInfo, pokemonResourceResult.next)
+        callback?.invoke(false)
+
     }
 
 
-    fun loadPokemonResource(): Pair<List<PokemonInfo>, List<SpeciesInfo>> {
-        val pokemonResource = dataSource.queryPokemonResources(0, 20)
-        val pokemonInfoList: List<PokemonInfo> = pokemonResource?.results?.map {
+    fun loadPokemonResource(
+        offset: Int,
+        limit: Int
+    ): PokemonResourceResult? {
+        val pokemonResource = dataSource.queryPokemonResources(offset, limit)
+        pokemonResource ?: return null
+
+        val next = pokemonResource.next?.let {
+            Uri.parse(it).getQueryParameter("offset")?.toInt()
+        } ?: pokemonResource.count
+
+        val pokemonInfoList: List<PokemonInfo> = pokemonResource.results?.map {
             val name = it.name
             val pokemonId = it.url.let { Uri.parse(it) }?.lastPathSegment
             Pair<String, String?>(name, pokemonId)
@@ -68,7 +126,10 @@ class PokemonResourceLoader {
                 list
             )
         }
-        return Pair(pokemonInfoList, speciesInfoList)
+        return PokemonResourceResult(
+            pokemonInfoList, speciesInfoList,
+            next
+        )
     }
 
 

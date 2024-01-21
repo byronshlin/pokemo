@@ -5,14 +5,15 @@ import androidx.room.RoomDatabase
 import com.byronlin.pokemo.room.dao.PokemonQueryDao
 import com.byronlin.pokemo.room.dao.PokemonUpdateDao
 import com.byronlin.pokemo.room.entity.PokemonEntity
-import com.byronlin.pokemo.room.entity.PokemonTypesEntity
+import com.byronlin.pokemo.room.entity.PokemonLoadEntity
+import com.byronlin.pokemo.room.entity.PokemonTypesRelationshipEntity
 import com.byronlin.pokemo.room.entity.SpeciesDescriptionEntity
 import com.byronlin.pokemo.room.entity.SpeciesEntity
 
 
 
 @Database(
-    entities = [PokemonEntity::class, PokemonTypesEntity::class, SpeciesEntity::class, SpeciesDescriptionEntity::class],
+    entities = [PokemonLoadEntity::class, PokemonEntity::class, PokemonTypesRelationshipEntity::class, SpeciesEntity::class, SpeciesDescriptionEntity::class],
     version = 1
 )
 abstract class PokemonRoomDatabase : RoomDatabase() {

@@ -1,6 +1,7 @@
 package com.byronlin.pokemo.activity
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -9,14 +10,27 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.byronlin.pokemo.R
 import com.byronlin.pokemo.databinding.ActivityMainBinding
+import com.byronlin.pokemo.repository.PokemonResourceLoader
+import com.byronlin.pokemo.utils.PKLog
+import com.byronlin.pokemo.viewmodel.MainActivityViewModel
+import com.byronlin.pokemo.viewmodel.MainFragmentViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
+
+    private val mainActivityViewModel: MainActivityViewModel by viewModels()
+
+    private val pokemonResourceLoader :PokemonResourceLoader = PokemonResourceLoader()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -33,6 +47,23 @@ class MainActivity : AppCompatActivity() {
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
+
+
+
+        mainActivityViewModel.loadCompleteLiveData.observe(this){
+            if (it){
+                PKLog.v("load complete")
+            }
+        }
+
+        mainActivityViewModel
+//
+//
+//
+//
+//        lifecycleScope.launch(Dispatchers.IO) {
+//            pokemonResourceLoader.startLoadResourceToLocal(this@MainActivity)
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -55,5 +86,11 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        pokemonResourceLoader.stop()
     }
 }

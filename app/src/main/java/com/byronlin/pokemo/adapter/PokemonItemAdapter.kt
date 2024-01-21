@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.byronlin.pokemo.R
 import com.byronlin.pokemo.databinding.ItemPokemoBinding
 import com.byronlin.pokemo.model.PokemonDisplayItem
 
@@ -36,17 +37,20 @@ class PokemonItemAdapter : RecyclerView.Adapter<PokemonItemAdapter.PokemonItemVi
         val pokemonDisplayItem = pokemonItemList[position]
 
         holder.binding.pokemonName.text = pokemonDisplayItem.title
-        Glide.with(holder.binding.root.context)
-            .load(" https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")
-            .fitCenter()
-            .into(holder.binding.pokemonImage)
+//        Glide.with(holder.binding.root.context)
+//            .load(" https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")
+//            .placeholder(R.drawable.fake)
+//            .fitCenter()
+//            .into(holder.binding.pokemonImage)
 
 
-//        pokemonDisplayItem.imageUrl.let {
-//            Glide.with(holder.binding.root.context).load(it)
-//                .fitCenter()
-//                .into(holder.binding.pokemonImage)
-//        }
+        pokemonDisplayItem.imageUrl.let {
+            Glide.with(holder.binding.root.context)
+                .load(it)
+                .placeholder(R.drawable.fake)
+                .fitCenter()
+                .into(holder.binding.pokemonImage)
+        }
     }
 
 

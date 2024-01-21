@@ -4,11 +4,11 @@ import androidx.room.Entity
 
 
 @Entity(
-    tableName = "pokemonTypes",
+    tableName = "pokemonTypesRelationship",
     primaryKeys = ["idOfPokemon", "type"],
     indices = [androidx.room.Index(value = ["type"])]
 )
-data class PokemonTypesEntity(
+data class PokemonTypesRelationshipEntity(
     val idOfPokemon: String,
     val type: String
 )

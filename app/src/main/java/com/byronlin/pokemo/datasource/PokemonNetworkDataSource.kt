@@ -1,13 +1,10 @@
 package com.byronlin.pokemo.datasource
 
 import com.byronlin.pokemo.datasource.api.PokemonApiService
-import com.byronlin.pokemo.datasource.response.PokemonResourceResponse
+import com.byronlin.pokemo.datasource.response.NamedAPIResourceList
 import com.byronlin.pokemo.datasource.response.PokemonResponse
 import com.byronlin.pokemo.datasource.response.SpeciesResponse
-import com.byronlin.pokemo.model.Pokemon
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,7 +14,7 @@ class PokemonNetworkDataSource {
 
     private var oAuthOkhttpClient: OkHttpClient? = null
 
-    fun queryPokemonResources(offset: Int, limit: Int): PokemonResourceResponse? {
+    fun queryPokemonResources(offset: Int, limit: Int): NamedAPIResourceList? {
         val retrofit = obtainRetrofit()
         return (try {
             retrofit.create(PokemonApiService::class.java).getPokemonResources(offset, limit)

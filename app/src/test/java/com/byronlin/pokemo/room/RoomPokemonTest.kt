@@ -115,18 +115,53 @@ class RoomPokemonTest {
             info.speciesDescriptionEntityList[5].description,
             speciesInfoList[4].descriptionInfo[0].description
         )
-        Assert.assertEquals(info.pokemonTypesEntityList.size, 10)
+        Assert.assertEquals(info.pokemonTypesRelationshipEntityList.size, 10)
     }
 
     @Test
+    fun testRecord() {
+        val next = db.queryDao().queryNext()
+        println("next: $next")
+        Assert.assertEquals(next, -1)
+    }
+    @Test
     fun testLoadToDatabase() {
+
+
+
         val info =
             DataHelper.transferPokemonInfoListToWriteEntityInfo(pokenmonlist, speciesInfoList)
-        db.updateDao().loadToDatabase(info)
-        db.queryDao().queryPokemonEntityList().observeForever { result ->
+        db.updateDao().loadToDatabase(10, info)
+
+        db.queryDao().queryNext().also { result ->
+            Assert.assertNotNull(result)
+            Assert.assertEquals(result, 10)
+        }
+
+        db.queryDao().queryPokemonEntityList().also { result ->
             Assert.assertNotNull(result)
             Assert.assertEquals(result!!.size, 6)
         }
+
+        db.queryDao().queryPokemonTypes().also { result ->
+            Assert.assertNotNull(result)
+            Assert.assertEquals(result!!.size, 10)
+        }
+
+
+        db.queryDao().queryTypesOfPokemon("0").also { result ->
+            Assert.assertNotNull(result)
+            Assert.assertEquals(result!!.size, 2)
+
+            Assert.assertEquals(result[0], "grass")
+            Assert.assertEquals(result[1], "poison")
+        }
+
+        db.queryDao().queryTypes().also { result ->
+            Assert.assertNotNull(result)
+            Assert.assertEquals(result!!.size, 4)
+        }
+
     }
 
 

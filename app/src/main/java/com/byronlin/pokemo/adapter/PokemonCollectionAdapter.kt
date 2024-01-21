@@ -29,7 +29,7 @@ class PokemonCollectionAdapter : RecyclerView.Adapter<PokemonCollectionAdapter.P
 
     override fun onBindViewHolder(holder: PokemonCollectionViewHolder, position: Int) {
         var collectionItem = pokemonCollectionList[position]
-        holder.binding.title.text = collectionItem.title
+        holder.binding.title.text = collectionItem.type
         holder.binding.collectionRecyclerView.layoutManager = LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL, false)
         holder.binding.collectionRecyclerView.adapter = PokemonItemAdapter().apply {
             updateList(collectionItem.pokemonItemList)
