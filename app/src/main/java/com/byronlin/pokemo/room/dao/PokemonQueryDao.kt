@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.byronlin.pokemo.room.entity.PokemonEntity
 import com.byronlin.pokemo.room.entity.PokemonTypesRelationshipEntity
+import com.byronlin.pokemo.room.entity.SpeciesDescriptionEntity
 import com.byronlin.pokemo.room.entity.SpeciesEntity
 
 
@@ -20,8 +21,14 @@ interface PokemonQueryDao {
     @Query("SELECT * FROM species")
     fun querySpeciesEntityList(): List<SpeciesEntity>
 
+    @Query("SELECT * FROM species WHERE id = :id")
+    fun querySpeciesEntityBySpeciesId(id: String): SpeciesEntity?
+
+    @Query("SELECT * FROM speciesDescription WHERE idOfSpecies = :id")
+    fun querySpeciesDescriptionBySpeciesId(id: String): List<SpeciesDescriptionEntity>
+
     @Query("SELECT * FROM pokemon WHERE id = :id")
-    fun queryPokemonEntityById(id: String): PokemonEntity
+    fun queryPokemonEntityById(id: String): PokemonEntity?
 
     @Query("SELECT * FROM pokemon WHERE pokemon.id IN (SELECT idOfPokemon FROM pokemonTypesRelationship WHERE type = :type)")
     fun queryPokemonEntityListByType(type: String): List<PokemonEntity>

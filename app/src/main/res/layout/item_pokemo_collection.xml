@@ -7,18 +7,38 @@
     android:layout_marginBottom="30dp">
     <TextView
         android:id="@+id/title"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintVertical_bias="0"
+        app:layout_constraintHorizontal_bias="0"
         android:textColor="@color/black"
         android:textSize="16sp"
         android:textStyle="bold"
         android:fontFamily="sens-serif"
         tools:text="Pokemon Collection"
+        android:layout_marginStart="10dp"
+        />
+
+    <TextView
+        android:id="@+id/count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintHorizontal_bias="1"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:fontFamily="sens-serif"
+        tools:text="10"
+        android:layout_marginEnd="10dp"
         />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -33,6 +53,7 @@
         tools:listitem="@layout/item_pokemo"
         tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="10"
+        android:paddingStart="10dp"
         />
 
         <View
@@ -46,5 +67,4 @@
             app:layout_constraintVertical_bias="0"
             android:layout_marginTop="10dp"
             />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

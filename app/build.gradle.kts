@@ -90,7 +90,7 @@ dependencies {
     testImplementation("androidx.room:room-testing:$room_version")
     implementation("androidx.room:room-guava:$room_version")
 
-
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
 
 
 

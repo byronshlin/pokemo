@@ -8,16 +8,17 @@ import com.byronlin.pokemo.R
 import com.byronlin.pokemo.databinding.ItemPokemoBinding
 import com.byronlin.pokemo.model.PokemonDisplayItem
 
-class PokemonItemAdapter : RecyclerView.Adapter<PokemonItemAdapter.PokemonItemViewHolder>() {
+class PokemonItemAdapter(
+    private val onPick: (String) -> Unit,
+    private val onCapture: (String, Boolean) -> Unit
+) : RecyclerView.Adapter<PokemonItemAdapter.PokemonItemViewHolder>() {
 
     private var pokemonItemList = mutableListOf<PokemonDisplayItem>()
-
     fun updateList(list: List<PokemonDisplayItem>) {
         pokemonItemList.clear()
         pokemonItemList.addAll(list)
         notifyDataSetChanged()
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonItemViewHolder {
         return PokemonItemViewHolder(
@@ -37,12 +38,6 @@ class PokemonItemAdapter : RecyclerView.Adapter<PokemonItemAdapter.PokemonItemVi
         val pokemonDisplayItem = pokemonItemList[position]
 
         holder.binding.pokemonName.text = pokemonDisplayItem.title
-//        Glide.with(holder.binding.root.context)
-//            .load(" https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")
-//            .placeholder(R.drawable.fake)
-//            .fitCenter()
-//            .into(holder.binding.pokemonImage)
-
 
         pokemonDisplayItem.imageUrl.let {
             Glide.with(holder.binding.root.context)
@@ -50,6 +45,14 @@ class PokemonItemAdapter : RecyclerView.Adapter<PokemonItemAdapter.PokemonItemVi
                 .placeholder(R.drawable.fake)
                 .fitCenter()
                 .into(holder.binding.pokemonImage)
+        }
+
+        holder.binding.root.setOnClickListener {
+            onPick.invoke(pokemonDisplayItem.id)
+        }
+
+        holder.binding.pokemonBall.setOnClickListener {
+            onCapture.invoke(pokemonDisplayItem.id, pokemonDisplayItem.captured)
         }
     }
 

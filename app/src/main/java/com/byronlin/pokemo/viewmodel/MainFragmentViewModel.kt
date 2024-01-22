@@ -68,7 +68,9 @@ class MainFragmentViewModel : ViewModel() {
                             pokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
                                 .queryCapturePokemonList()
                                 .map {
-                                    PokemonDisplayItem(it.id, it.name, it.posterUrl)
+                                    PokemonDisplayItem(it.id, it.name, it.posterUrl,
+                                        it.captured == 1
+                                    )
                                 }.let {
                                     Pair(type, PokemonCollectionDisplayItem(type, it, true))
                                 }
@@ -76,7 +78,7 @@ class MainFragmentViewModel : ViewModel() {
                             pokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
                                 .queryPokemonEntityListByType(type)
                                 .map {
-                                    PokemonDisplayItem(it.id, it.name, it.posterUrl)
+                                    PokemonDisplayItem(it.id, it.name, it.posterUrl, it.captured == 1)
                                 }.let {
                                     Pair(type, PokemonCollectionDisplayItem(type, it, false))
                                 }
@@ -122,6 +124,23 @@ class MainFragmentViewModel : ViewModel() {
             }
             if (action) {
                 _loadCompleteLiveData.value = true
+            }
+        }
+    }
+
+
+    fun catchPokemon(context: Context, id: String){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                pokemonRoomHelper.obtainPokemonDatabase(context).updateDao().catchPokemon(id)
+            }
+        }
+    }
+
+    fun releasePokemon(context: Context, id: String){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                pokemonRoomHelper.obtainPokemonDatabase(context).updateDao().releasePokemon(id)
             }
         }
     }

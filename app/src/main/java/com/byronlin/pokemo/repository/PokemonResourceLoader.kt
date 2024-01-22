@@ -144,7 +144,7 @@ class PokemonResourceLoader {
                 it.evolvesFromSpecies?.url?.let { Uri.parse(it) }?.lastPathSegment
 
             val list = it.flavorTextEntries?.map {
-                DescriptionInfo(it.flavor_text, it.language.name)
+                DescriptionInfo(language = it.language.name, description= it.flavor_text)
             } ?: arrayListOf()
 
             SpeciesInfo(

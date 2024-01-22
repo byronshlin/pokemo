@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.byronlin.pokemo.R
 import com.byronlin.pokemo.adapter.PokemonCollectionAdapter
 import com.byronlin.pokemo.databinding.FragmentMainBinding
 import com.byronlin.pokemo.viewmodel.MainActivityViewModel
@@ -49,7 +51,21 @@ class MainFragment : Fragment() {
 
     private fun renderView(){
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.mainRecyclerView.adapter = PokemonCollectionAdapter()
+        binding.mainRecyclerView.adapter = PokemonCollectionAdapter(::onPick, ::onCapture)
+    }
+
+
+    private fun onPick(id: String){
+        val bundle = Bundle()
+        bundle.putString("id", id)
+        findNavController().navigate(R.id.action_to_DetailFragment, bundle)
+    }
+    private fun onCapture(id: String, captured: Boolean){
+        if (captured) {
+            homeViewModel.releasePokemon(requireContext(), id)
+        } else {
+            homeViewModel.catchPokemon(requireContext(), id)
+        }
     }
 
     private fun initViewModel(){

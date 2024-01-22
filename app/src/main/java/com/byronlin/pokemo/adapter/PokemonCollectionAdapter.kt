@@ -7,7 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.byronlin.pokemo.databinding.ItemPokemoCollectionBinding
 import com.byronlin.pokemo.model.PokemonCollectionDisplayItem
 
-class PokemonCollectionAdapter : RecyclerView.Adapter<PokemonCollectionAdapter.PokemonCollectionViewHolder>() {
+class PokemonCollectionAdapter(
+    private val onPick: (String) -> Unit,
+    private val onCapture: (String, Boolean) -> Unit
+) : RecyclerView.Adapter<PokemonCollectionAdapter.PokemonCollectionViewHolder>() {
 
     private var pokemonCollectionList = mutableListOf<PokemonCollectionDisplayItem>()
 
@@ -30,8 +33,9 @@ class PokemonCollectionAdapter : RecyclerView.Adapter<PokemonCollectionAdapter.P
     override fun onBindViewHolder(holder: PokemonCollectionViewHolder, position: Int) {
         var collectionItem = pokemonCollectionList[position]
         holder.binding.title.text = collectionItem.type
+        holder.binding.count.text = collectionItem.pokemonItemList.size.toString()
         holder.binding.collectionRecyclerView.layoutManager = LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL, false)
-        holder.binding.collectionRecyclerView.adapter = PokemonItemAdapter().apply {
+        holder.binding.collectionRecyclerView.adapter = PokemonItemAdapter(onPick, onCapture).apply {
             updateList(collectionItem.pokemonItemList)
         }
     }
