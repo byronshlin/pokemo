@@ -13,7 +13,9 @@ import com.byronlin.pokemo.room.entity.SpeciesEntity
 
 
 @Database(
-    entities = [PokemonLoadEntity::class, PokemonEntity::class, PokemonTypesRelationshipEntity::class, SpeciesEntity::class, SpeciesDescriptionEntity::class],
+    entities = [PokemonLoadEntity::class, PokemonEntity::class,
+        PokemonTypesRelationshipEntity::class, SpeciesEntity::class,
+        SpeciesDescriptionEntity::class],
     version = 1
 )
 abstract class PokemonRoomDatabase : RoomDatabase() {

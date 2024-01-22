@@ -70,21 +70,14 @@ class PokemonResourceLoader {
 
     @WorkerThread
     fun loadResourceToLocalOnce(context: Context, limit: Int): Boolean {
-
-
         val queryDao = pokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
         val updateDao = pokemonRoomHelper.obtainPokemonDatabase(context).updateDao()
-
-
-        updateDao.clearAll()
 
         val offset = queryDao.queryNext() ?: 0
 
         if (offset > 0) {
             return true
         }
-
-        val beginLoad = System.currentTimeMillis()
 
         //start load
         val pokemonResourceResult = loadPokemonResource(0, limit) ?: return false

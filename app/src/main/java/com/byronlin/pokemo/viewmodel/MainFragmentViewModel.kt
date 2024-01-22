@@ -15,7 +15,9 @@ import kotlinx.coroutines.withContext
 
 class MainFragmentViewModel : ViewModel() {
 
-    private val INIT_TYPE_NUMBER = 6
+
+
+    private val INIT_TYPE_NUMBER = Int.MAX_VALUE
 
     private val pokemonRoomHelper : PokemonRoomHelper = PokemonRoomHelper()
     private val _collectionsLiveData: MutableLiveData<List<PokemonCollectionDisplayItem>> =
@@ -37,6 +39,7 @@ class MainFragmentViewModel : ViewModel() {
     val visibleTypes: LiveData<List<String>> = _visibleTypes
 
 
+    private val MY_POKEMON = "My Pokemon"
 
     private val pokemonResourceLoader = PokemonResourceLoader()
     private val _loadCompleteLiveData: MutableLiveData<Boolean> = MutableLiveData()
@@ -52,29 +55,40 @@ class MainFragmentViewModel : ViewModel() {
             }
 
             _pokemonTypesLiveData.value = types
-            _visibleTypes.value = types.take(INIT_TYPE_NUMBER)
+            _visibleTypes.value =
+                mutableListOf<String>().apply {
+                    add(MY_POKEMON)
+                    addAll(types.take(INIT_TYPE_NUMBER))
+                }
 
             _visibleTypes.value?.let { typeList ->
                 withContext(Dispatchers.IO) {
                     typeList.map { type ->
-                        pokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
-                            .queryPokemonEntityListByType(type)
-                            .map {
-                                PokemonDisplayItem(it.id, it.name, it.posterUrl)
-                            }.let {
-                                Pair(type, PokemonCollectionDisplayItem(type, it))
-                            }
+                        if (type == MY_POKEMON) {
+                            pokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
+                                .queryCapturePokemonList()
+                                .map {
+                                    PokemonDisplayItem(it.id, it.name, it.posterUrl)
+                                }.let {
+                                    Pair(type, PokemonCollectionDisplayItem(type, it, true))
+                                }
+                        } else {
+                            pokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
+                                .queryPokemonEntityListByType(type)
+                                .map {
+                                    PokemonDisplayItem(it.id, it.name, it.posterUrl)
+                                }.let {
+                                    Pair(type, PokemonCollectionDisplayItem(type, it, false))
+                                }
+                        }
                     }
                 }
             }?.toMap().let {
                 _visibleCollectionOfTypes.value = it
             }
-
             val list = _visibleTypes.value?.map {
                 _visibleCollectionOfTypes.value?.get(it)
             }?.filterNotNull() ?: arrayListOf()
-
-            //
             _collectionsLiveData.value = list
         }
     }

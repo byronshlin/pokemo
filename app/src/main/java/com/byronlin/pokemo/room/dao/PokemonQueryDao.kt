@@ -23,7 +23,7 @@ interface PokemonQueryDao {
     @Query("SELECT * FROM pokemon WHERE id = :id")
     fun queryPokemonEntityById(id: String): PokemonEntity
 
-    @Query("SELECT * FROM pokemon WHERE id IN (SELECT idOfPokemon FROM pokemonTypesRelationship WHERE type = :type)")
+    @Query("SELECT * FROM pokemon WHERE pokemon.id IN (SELECT idOfPokemon FROM pokemonTypesRelationship WHERE type = :type)")
     fun queryPokemonEntityListByType(type: String): List<PokemonEntity>
 
     @Query("SELECT * FROM pokemonTypesRelationship")
@@ -34,4 +34,7 @@ interface PokemonQueryDao {
 
     @Query("SELECT DISTINCT type FROM pokemonTypesRelationship")
     fun queryTypes(): List<String>
+
+    @Query("SELECT * FROM pokemon WHERE captured = 1")
+    fun queryCapturePokemonList() : List<PokemonEntity>
 }

@@ -6,8 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.sqlite.db.SimpleSQLiteQuery
-import androidx.sqlite.db.SupportSQLiteQuery
+import androidx.room.Update
 import com.byronlin.pokemo.room.data.DataHelper
 import com.byronlin.pokemo.room.data.PokemonInfo
 import com.byronlin.pokemo.room.data.SpeciesInfo
@@ -54,22 +53,21 @@ interface PokemonUpdateDao {
 
 
     @Query("DELETE FROM pokemon_load")
-    fun deletePokemonLoad()
+    fun clearPokemonLoad()
     @Query("DELETE FROM pokemon")
-    fun deletePokemon()
+    fun clearPokemon()
     @Query("DELETE FROM pokemonTypesRelationship")
-    fun deletePokemonTypesRelationShip()
+    fun clearPokemonTypesRelationShip()
     @Query("DELETE FROM species")
-    fun deleteSpecies()
+    fun clearSpecies()
     @Query("DELETE FROM speciesDescription")
-    fun deleteSpeciesDescription()
+    fun clearSpeciesDescription()
 
+    @Query("UPDATE pokemon SET captured = 1 WHERE id = :id")
+    fun catchPokemon(id: String)
 
-    @Transaction
-    fun clear() {
-
-    }
-
+    @Query("UPDATE pokemon SET captured = 0 WHERE id = :id")
+    fun releasePokemon(id: String)
 
     fun loadToDatabase(
         pokemonInfoList: List<PokemonInfo>,
@@ -99,10 +97,11 @@ interface PokemonUpdateDao {
 
     @Transaction
     fun clearAll() {
-        deletePokemonLoad()
-        deletePokemon()
-        deletePokemonTypesRelationShip()
-        deleteSpecies()
-        deleteSpeciesDescription()
+        clearPokemonLoad()
+        clearPokemon()
+        clearPokemonTypesRelationShip()
+        clearSpecies()
+        clearSpeciesDescription()
+        //clearCapture()
     }
 }

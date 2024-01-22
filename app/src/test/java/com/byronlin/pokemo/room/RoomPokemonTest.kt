@@ -10,6 +10,7 @@ import com.byronlin.pokemo.room.data.DataHelper
 import com.byronlin.pokemo.room.data.DescriptionInfo
 import com.byronlin.pokemo.room.data.PokemonInfo
 import com.byronlin.pokemo.room.data.SpeciesInfo
+import com.byronlin.pokemo.room.entity.CaptureEntity
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -119,19 +120,10 @@ class RoomPokemonTest {
     }
 
     @Test
-    fun testRecord() {
-        val next = db.queryDao().queryNext()
-        println("next: $next")
-        Assert.assertEquals(next, -1)
-    }
-    @Test
     fun testLoadToDatabase() {
-
-
-
         val info =
             DataHelper.transferPokemonInfoListToWriteEntityInfo(pokenmonlist, speciesInfoList)
-        db.updateDao().loadToDatabase(10, info)
+        db.updateDao().loadToDatabase( info, 10)
 
         db.queryDao().queryNext().also { result ->
             Assert.assertNotNull(result)
@@ -149,17 +141,33 @@ class RoomPokemonTest {
         }
 
 
-        db.queryDao().queryTypesOfPokemon("0").also { result ->
+        db.queryDao().queryTypesOfPokemon("1").also { result ->
             Assert.assertNotNull(result)
-            Assert.assertEquals(result!!.size, 2)
+            Assert.assertEquals( 2, result!!.size)
 
-            Assert.assertEquals(result[0], "grass")
-            Assert.assertEquals(result[1], "poison")
+            Assert.assertEquals("grass", result[0])
+            Assert.assertEquals( "poison", result[1])
         }
 
         db.queryDao().queryTypes().also { result ->
             Assert.assertNotNull(result)
             Assert.assertEquals(result!!.size, 4)
+        }
+
+        db.updateDao().catchPokemon("1")
+
+        db.queryDao().queryCapturePokemonList().also { result ->
+            Assert.assertNotNull(result)
+            Assert.assertEquals(result!!.size, 1)
+            Assert.assertEquals(result[0].id, "1")
+            Assert.assertEquals(result[0].captured, 1)
+        }
+
+        db.updateDao().releasePokemon("1")
+
+        db.queryDao().queryCapturePokemonList().also { result ->
+            Assert.assertNotNull(result)
+            Assert.assertEquals(result!!.size, 0)
         }
 
     }
