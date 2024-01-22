@@ -17,9 +17,7 @@ class MainActivityViewModel: ViewModel() {
 
     fun startLoadResource(context: Context){
         viewModelScope.launch(Dispatchers.IO) {
-            pokemonResourceLoader.startLoadResourceToLocal(context){
-                _loadCompleteLiveData.postValue(it)
-            }
+            pokemonResourceLoader.loadResourceToLocalOnce(context, 151)
         }
     }
 }

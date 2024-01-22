@@ -1,9 +1,13 @@
 package com.byronlin.pokemo.room.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import androidx.room.Transaction
+import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.byronlin.pokemo.room.data.DataHelper
 import com.byronlin.pokemo.room.data.PokemonInfo
 import com.byronlin.pokemo.room.data.SpeciesInfo
@@ -49,7 +53,24 @@ interface PokemonUpdateDao {
     fun insertOrUpdatePokemonTypeList(pokemonTypesRelationshipEntityList: List<PokemonTypesRelationshipEntity>)
 
 
+    @Query("DELETE FROM pokemon_load")
+    fun deletePokemonLoad()
+    @Query("DELETE FROM pokemon")
+    fun deletePokemon()
+    @Query("DELETE FROM pokemonTypesRelationship")
+    fun deletePokemonTypesRelationShip()
+    @Query("DELETE FROM species")
+    fun deleteSpecies()
+    @Query("DELETE FROM speciesDescription")
+    fun deleteSpeciesDescription()
+
+
     @Transaction
+    fun clear() {
+
+    }
+
+
     fun loadToDatabase(
         pokemonInfoList: List<PokemonInfo>,
         speciesInfoList: List<SpeciesInfo>,
@@ -75,7 +96,13 @@ interface PokemonUpdateDao {
         insertLoadRecord(PokemonLoadEntity(next = next))
     }
 
-    fun clearAll() {
 
+    @Transaction
+    fun clearAll() {
+        deletePokemonLoad()
+        deletePokemon()
+        deletePokemonTypesRelationShip()
+        deleteSpecies()
+        deleteSpeciesDescription()
     }
 }

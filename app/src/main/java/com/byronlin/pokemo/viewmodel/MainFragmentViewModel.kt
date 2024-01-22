@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.byronlin.pokemo.model.PokemonCollectionDisplayItem
 import com.byronlin.pokemo.model.PokemonDisplayItem
+import com.byronlin.pokemo.repository.PokemonResourceLoader
 import com.byronlin.pokemo.room.PokemonRoomHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ class MainFragmentViewModel : ViewModel() {
 
     private val INIT_TYPE_NUMBER = 6
 
+    private val pokemonRoomHelper : PokemonRoomHelper = PokemonRoomHelper()
     private val _collectionsLiveData: MutableLiveData<List<PokemonCollectionDisplayItem>> =
         MutableLiveData()
 
@@ -35,10 +37,18 @@ class MainFragmentViewModel : ViewModel() {
     val visibleTypes: LiveData<List<String>> = _visibleTypes
 
 
+
+    private val pokemonResourceLoader = PokemonResourceLoader()
+    private val _loadCompleteLiveData: MutableLiveData<Boolean> = MutableLiveData()
+
+    val loadCompleteLiveData: LiveData<Boolean> = _loadCompleteLiveData
+
+
+
     fun initMainViews(context: Context) {
         viewModelScope.launch {
             val types = withContext(Dispatchers.IO) {
-                PokemonRoomHelper.obtainPokemonDatabase(context).queryDao().queryTypes()
+                pokemonRoomHelper.obtainPokemonDatabase(context).queryDao().queryTypes()
             }
 
             _pokemonTypesLiveData.value = types
@@ -47,7 +57,7 @@ class MainFragmentViewModel : ViewModel() {
             _visibleTypes.value?.let { typeList ->
                 withContext(Dispatchers.IO) {
                     typeList.map { type ->
-                        PokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
+                        pokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
                             .queryPokemonEntityListByType(type)
                             .map {
                                 PokemonDisplayItem(it.id, it.name, it.posterUrl)
@@ -72,7 +82,7 @@ class MainFragmentViewModel : ViewModel() {
     fun updateTypesOfCollections(context: Context) {
         viewModelScope.launch {
             val types = withContext(Dispatchers.IO) {
-                PokemonRoomHelper.obtainPokemonDatabase(context).queryDao().queryTypes()
+                pokemonRoomHelper.obtainPokemonDatabase(context).queryDao().queryTypes()
             }
             _pokemonTypesLiveData.value = types
         }
@@ -82,10 +92,22 @@ class MainFragmentViewModel : ViewModel() {
     fun updateMainCollections(context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val dao = PokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
+                val dao = pokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
                 _visibleTypes.value?.map {
                     Pair(it, dao.queryPokemonEntityListByType(it))
                 }
+            }
+        }
+    }
+
+
+    fun startLoadResource(context: Context){
+        viewModelScope.launch {
+            val action = withContext(Dispatchers.IO) {
+                pokemonResourceLoader.loadResourceToLocalOnce(context, 30)
+            }
+            if (action) {
+                _loadCompleteLiveData.value = true
             }
         }
     }

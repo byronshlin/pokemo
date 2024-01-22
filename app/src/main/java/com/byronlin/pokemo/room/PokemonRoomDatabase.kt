@@ -19,8 +19,6 @@ import com.byronlin.pokemo.room.entity.SpeciesEntity
 abstract class PokemonRoomDatabase : RoomDatabase() {
     abstract fun updateDao(): PokemonUpdateDao
     abstract fun queryDao(): PokemonQueryDao
-
-
     companion object {
         const val DATABASE_NAME = "pokemon_database"
     }

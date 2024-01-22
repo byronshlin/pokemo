@@ -25,7 +25,6 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val homeViewModel: MainFragmentViewModel by viewModels()
-    private lateinit var mainActivityViewModel : MainActivityViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,14 +44,7 @@ class MainFragment : Fragment() {
 
         renderView()
         initViewModel()
-
-//        Glide.with(this)
-//            .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")
-//           // .placeholder(R.drawable.ic_launcher_background)
-//            .error(R.drawable.ic_launcher_background)
-//            .into(binding.testingImage)
-
-        homeViewModel.initMainViews(requireContext())
+        homeViewModel.startLoadResource(requireContext())
     }
 
     private fun renderView(){
@@ -62,17 +54,14 @@ class MainFragment : Fragment() {
 
     private fun initViewModel(){
 
-        mainActivityViewModel = ViewModelProvider(requireActivity()).get(MainActivityViewModel::class.java)
 
         homeViewModel.collectionsLiveData.observe(viewLifecycleOwner) {
             (binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList(it)
         }
 
-
-        mainActivityViewModel.loadCompleteLiveData.observe(viewLifecycleOwner){
+        homeViewModel.loadCompleteLiveData.observe(viewLifecycleOwner){
             homeViewModel.initMainViews(requireContext())
         }
-        
     }
 
     override fun onDestroyView() {

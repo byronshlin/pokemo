@@ -8,4 +8,8 @@ object PKLog {
     fun v(subTag: String, desc: String) {
         Log.v(TAG, "$subTag: $desc")
     }
+
+    fun e(subTag: String, desc: String, e: Throwable) {
+        Log.e(TAG, "$subTag: $desc", e)
+    }
 }

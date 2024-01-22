@@ -6,21 +6,23 @@ import androidx.lifecycle.map
 import androidx.room.Room
 import com.byronlin.pokemo.model.PokemonDisplayItem
 
-object PokemonRoomHelper {
-
-
-
-
-    private var sCommonLibRoomDatabase: PokemonRoomDatabase? = null
-
+class PokemonRoomHelper {
     @WorkerThread
     fun obtainPokemonDatabase(context: Context): PokemonRoomDatabase {
-        sCommonLibRoomDatabase = sCommonLibRoomDatabase?: synchronized(this){
-            sCommonLibRoomDatabase?: Room.databaseBuilder(
-                context.applicationContext,
-                PokemonRoomDatabase::class.java, PokemonRoomDatabase.DATABASE_NAME
-            ).build()
+        if (sCommonLibRoomDatabase == null) {
+            synchronized(LOCK){
+                sCommonLibRoomDatabase = Room.databaseBuilder(
+                    context.applicationContext,
+                    PokemonRoomDatabase::class.java, PokemonRoomDatabase.DATABASE_NAME
+                ).build()
+            }
         }
+
         return sCommonLibRoomDatabase!!
+    }
+
+    companion object {
+        private var sCommonLibRoomDatabase: PokemonRoomDatabase? = null
+        private var LOCK  = Any()
     }
 }
