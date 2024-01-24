@@ -4,12 +4,14 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.byronlin.pokemo.model.PokemonCollectionDisplayItem
 import com.byronlin.pokemo.model.PokemonDisplayItem
 import com.byronlin.pokemo.repository.PokemonResourceLoader
 import com.byronlin.pokemo.repository.PokemonRoomRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -122,14 +124,22 @@ class MainFragmentViewModel(
     }
 
 
-    fun startLoadResource(context: Context) {
+    private var isLoading = false
+    fun startLoadResource(context: Context, continueLoad: Boolean) {
         viewModelScope.launch {
+
+            if (isLoading) {
+                return@launch
+            }
+
+            isLoading = true
             val action = withContext(Dispatchers.IO) {
-                pokemonResourceLoader.loadResourceToLocalOnce(context, 30)
+                pokemonResourceLoader.loadResourceToLocalOnce(context, 20, continueLoad)
             }
             if (action) {
                 _loadCompleteLiveData.value = true
             }
+            isLoading = false
         }
     }
 
@@ -147,6 +157,14 @@ class MainFragmentViewModel(
             withContext(Dispatchers.IO) {
                 pokemonRoomRepository.releasePokemon(id)
             }
+        }
+    }
+
+
+
+    fun startDownloadPokemonResource(context: Context) {
+        viewModelScope.launch {
+            //val flow =  pokemonResourceLoader.startLoadResourceToLocal2(context)
         }
     }
 

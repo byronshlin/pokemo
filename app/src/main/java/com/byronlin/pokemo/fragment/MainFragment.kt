@@ -43,13 +43,17 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
-        homeViewModel.startLoadResource(requireContext())
+        homeViewModel.startLoadResource(requireContext(), false)
     }
 
     private fun renderView() {
         binding.mainRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.mainRecyclerView.adapter = PokemonCollectionAdapter(::onPick, ::onCapture)
+
+        binding.fab.setOnClickListener {
+            homeViewModel.startLoadResource(requireContext(), true)
+        }
     }
 
 
