@@ -170,6 +170,15 @@ class RoomPokemonTest {
             Assert.assertEquals(result!!.size, 0)
         }
 
+        val pokemonTypeRelationshipSize = db.queryDao().queryPokemonTypes().size
+        db.queryDao().queryPokemonTypePairList().also {result ->
+            Assert.assertNotNull(result)
+            Assert.assertTrue(result!!.isNotEmpty())
+            println(result.size)
+            println(result[0])
+            Assert.assertEquals(pokemonTypeRelationshipSize, result.size)
+        }
+
     }
 
 

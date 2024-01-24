@@ -6,6 +6,7 @@ import androidx.annotation.WorkerThread
 import androidx.room.Room
 import com.byronlin.pokemo.room.PokemonRoomDatabase
 import com.byronlin.pokemo.room.entity.PokemonEntity
+import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
 
 class PokemonRoomRepository(private val application: Application) {
     @WorkerThread
@@ -32,6 +33,16 @@ class PokemonRoomRepository(private val application: Application) {
     fun queryCapturePokemonList(): List<PokemonEntity> {
         val queryDao = ensurePokemonDatabase().queryDao()
         return queryDao.queryCapturePokemonList()
+    }
+
+    fun queryPokemonTypePairList(): List<PokemonWithTypeEntity> {
+        val queryDao = ensurePokemonDatabase().queryDao()
+        return queryDao.queryPokemonTypePairList()
+    }
+
+    fun queryPokemonTypePairListByTypes(typeList: List<String>): List<PokemonWithTypeEntity> {
+        val queryDao = ensurePokemonDatabase().queryDao()
+        return queryDao.queryPokemonTypePairListByTypes(typeList.toTypedArray())
     }
 
     fun queryPokemonEntityListByType(type: String): List<PokemonEntity> {

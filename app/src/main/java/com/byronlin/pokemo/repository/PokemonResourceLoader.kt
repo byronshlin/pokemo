@@ -107,8 +107,9 @@ class PokemonResourceLoader(
         if (!continueLoad && offset > 0) {
             return false
         }
+        val begin = System.currentTimeMillis()
         val next = loadResourceToLocalByBatch(context, offset, limit)
-        PKLog.v(TAG, "loadResourceToLocalByBatch: response = ${next}")
+        PKLog.v(TAG, "loadResourceToLocal~: response = ${next} spend = ${System.currentTimeMillis() - begin}")
         return true
     }
 

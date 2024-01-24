@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.byronlin.pokemo.room.entity.PokemonEntity
 import com.byronlin.pokemo.room.entity.PokemonTypesRelationshipEntity
+import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
 import com.byronlin.pokemo.room.entity.SpeciesDescriptionEntity
 import com.byronlin.pokemo.room.entity.SpeciesEntity
 
@@ -32,6 +33,13 @@ interface PokemonQueryDao {
 
     @Query("SELECT * FROM pokemon WHERE pokemon.id IN (SELECT idOfPokemon FROM pokemonTypesRelationship WHERE type = :type)")
     fun queryPokemonEntityListByType(type: String): List<PokemonEntity>
+
+
+    @Query("SELECT pokemon.id AS id, pokemon.name AS name, pokemon.posterUrl AS posterUrl, idOfSpecies,  pokemon.captured As captured, pokemonTypesRelationship.type AS type FROM pokemon, pokemonTypesRelationship WHERE pokemon.id = pokemonTypesRelationship.idOfPokemon")
+    fun queryPokemonTypePairList(): List<PokemonWithTypeEntity>
+
+    @Query("SELECT pokemon.id AS id, pokemon.name AS name, pokemon.posterUrl AS posterUrl, idOfSpecies,  pokemon.captured As captured, pokemonTypesRelationship.type AS type FROM pokemon, pokemonTypesRelationship WHERE pokemon.id = pokemonTypesRelationship.idOfPokemon AND type IN (:types)")
+    fun queryPokemonTypePairListByTypes(types: Array<String>): List<PokemonWithTypeEntity>
 
     @Query("SELECT * FROM pokemonTypesRelationship")
     fun queryPokemonTypes(): List<PokemonTypesRelationshipEntity>
