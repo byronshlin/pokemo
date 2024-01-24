@@ -65,7 +65,7 @@ class PokemonResourceLoader(
     }
 
 
-    fun startLoadResourceToLocal2(context: Context) = flow {
+    fun startLoadResourceToLocalAsFlow(context: Context) = flow {
         val queryDao = pokemonRoomRepository.obtainPokemonDatabase(context).queryDao()
         do {
             val offset = queryDao.queryNext() ?: 0

@@ -13,6 +13,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.ui.NavigationUI
 import com.byronlin.pokemo.R
 import com.byronlin.pokemo.databinding.ActivityMainBinding
 import com.byronlin.pokemo.repository.PokemonResourceLoader
@@ -36,19 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        setSupportActionBar(binding.toolbar)
-
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
-//
-//
-//
-//        lifecycleScope.launch(Dispatchers.IO) {
-//            pokemonResourceLoader.startLoadResourceToLocal(this@MainActivity)
-//        }
+        supportActionBar?.hide()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

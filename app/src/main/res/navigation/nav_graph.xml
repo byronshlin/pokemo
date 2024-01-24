@@ -10,23 +10,13 @@
         android:name="com.byronlin.pokemo.fragment.MainFragment"
         android:label="@string/main_fragment_label"
         tools:layout="@layout/fragment_main">
-
-<!--        <action-->
-<!--            android:id="@+id/action_MainFragment_to_DetailFragment"-->
-<!--            app:destination="@id/DetailFragment" />-->
     </fragment>
     <fragment
         android:id="@+id/DetailFragment"
         android:name="com.byronlin.pokemo.fragment.DetailsFragment"
         android:label="@string/detail_fragment_label"
         tools:layout="@layout/fragment_second">
-
-<!--        <action-->
-<!--            android:id="@+id/action_DetailsFragment_to_MainFragment"-->
-<!--            app:destination="@id/MainFragment" />-->
-
     </fragment>
-
 
     <action
         android:id="@+id/action_to_DetailFragment"

@@ -194,6 +194,19 @@ class MainFragmentViewModel(
         }
     }
 
+    //startLoadResourceToLocalAsFlow
+
+    fun startLoadAllResource(context: Context, continueLoad: Boolean) {
+        viewModelScope.launch {
+
+            pokemonResourceLoader.startLoadResourceToLocalAsFlow(context)
+                .collect { offset ->
+                    if (offset > 0) {
+                        _loadCompleteLiveData.value = true
+                    }
+                }
+        }
+    }
 
     fun catchPokemon(context: Context, id: String) {
         viewModelScope.launch {

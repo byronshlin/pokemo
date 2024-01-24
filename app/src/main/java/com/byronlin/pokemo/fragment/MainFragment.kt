@@ -15,13 +15,14 @@ import com.byronlin.pokemo.databinding.FragmentMainBinding
 import com.byronlin.pokemo.datasource.PokemonNetworkDataSource
 import com.byronlin.pokemo.repository.PokemonResourceLoader
 import com.byronlin.pokemo.repository.PokemonRoomRepository
+import com.byronlin.pokemo.utils.PKLog
 import com.byronlin.pokemo.viewmodel.MainFragmentViewModel
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class MainFragment : Fragment() {
-
+    private val TAG = "MainFragment"
     private var _binding: FragmentMainBinding? = null
 
     // This property is only valid between onCreateView and
@@ -33,7 +34,7 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        PKLog.v(TAG, "onCreateView")
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         renderView()
         return binding.root
@@ -102,6 +103,7 @@ class MainFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        PKLog.v(TAG, "onDestroyView")
         _binding = null
     }
 }

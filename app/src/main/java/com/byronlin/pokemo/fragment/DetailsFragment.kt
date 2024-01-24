@@ -14,11 +14,12 @@ import com.byronlin.pokemo.R
 import com.byronlin.pokemo.databinding.FragmentSecondBinding
 import com.byronlin.pokemo.model.PokemonDetails
 import com.byronlin.pokemo.repository.PokemonRoomRepository
+import com.byronlin.pokemo.utils.PKLog
 import com.byronlin.pokemo.viewmodel.DetailViewModel
 
 
 class DetailsFragment : Fragment() {
-
+    private val TAG = "DetailsFragment"
     private var _binding: FragmentSecondBinding? = null
 
     private val binding get() = _binding!!
@@ -29,7 +30,7 @@ class DetailsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
+        PKLog.v(TAG, "onCreateView")
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
 
 
@@ -100,6 +101,7 @@ class DetailsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        PKLog.v(TAG, "onDestroyView")
         _binding = null
     }
 }

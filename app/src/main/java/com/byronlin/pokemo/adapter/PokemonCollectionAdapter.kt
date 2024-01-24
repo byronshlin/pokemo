@@ -38,6 +38,11 @@ class PokemonCollectionAdapter(
         holder.binding.collectionRecyclerView.adapter = PokemonItemAdapter(onPick, onCapture).apply {
             updateList(collectionItem.pokemonItemList)
         }
+        holder.binding.bottomLine.visibility = if (collectionItem.isMyPokemon) {
+            android.view.View.VISIBLE
+        } else {
+            android.view.View.GONE
+        }
     }
 
 
