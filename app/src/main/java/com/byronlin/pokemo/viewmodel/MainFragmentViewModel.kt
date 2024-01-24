@@ -13,9 +13,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainFragmentViewModel(private val pokemonRoomRepository: PokemonRoomRepository,
-                            private val pokemonResourceLoader : PokemonResourceLoader) : ViewModel() {
-
+class MainFragmentViewModel(
+    private val pokemonRoomRepository: PokemonRoomRepository,
+    private val pokemonResourceLoader: PokemonResourceLoader
+) : ViewModel() {
 
 
     private val INIT_TYPE_NUMBER = Int.MAX_VALUE
@@ -34,10 +35,9 @@ class MainFragmentViewModel(private val pokemonRoomRepository: PokemonRoomReposi
     val visibleMainCollectionOfTypes: LiveData<Map<String, PokemonCollectionDisplayItem>> =
         _visibleCollectionOfTypes
 
-    val _visibleTypes: MutableLiveData<List<String>> = MutableLiveData()
+    val _visibleTypesLiveData: MutableLiveData<List<String>> = MutableLiveData()
 
-    val visibleTypes: LiveData<List<String>> = _visibleTypes
-
+    val visibleTypesLiveData: LiveData<List<String>> = _visibleTypesLiveData
 
     private val MY_POKEMON = "My Pokemon"
 
@@ -45,52 +45,61 @@ class MainFragmentViewModel(private val pokemonRoomRepository: PokemonRoomReposi
 
     val loadCompleteLiveData: LiveData<Boolean> = _loadCompleteLiveData
 
-
-
     fun initMainViews(context: Context) {
         viewModelScope.launch {
             val types = withContext(Dispatchers.IO) {
                 pokemonRoomRepository.queryTypes()
             }
-
             _pokemonTypesLiveData.value = types
-            _visibleTypes.value =
+            _visibleTypesLiveData.value =
                 mutableListOf<String>().apply {
                     add(MY_POKEMON)
                     addAll(types.take(INIT_TYPE_NUMBER))
                 }
 
-            _visibleTypes.value?.let { typeList ->
-                withContext(Dispatchers.IO) {
-                    typeList.map { type ->
-                        if (type == MY_POKEMON) {
-                            pokemonRoomRepository.queryCapturePokemonList()
-                                .map {
-                                    PokemonDisplayItem(it.id, it.name, it.posterUrl,
-                                        it.captured == 1
-                                    )
-                                }.let {
-                                    Pair(type, PokemonCollectionDisplayItem(type, it, true))
-                                }
-                        } else {
-                            pokemonRoomRepository.queryPokemonEntityListByType(type)
-                                .map {
-                                    PokemonDisplayItem(it.id, it.name, it.posterUrl, it.captured == 1)
-                                }.let {
-                                    Pair(type, PokemonCollectionDisplayItem(type, it, false))
-                                }
-                        }
-                    }
-                }
-            }?.toMap().let {
-                _visibleCollectionOfTypes.value = it
-            }
-            val list = _visibleTypes.value?.map {
+            val visibleTypeList = _visibleTypesLiveData.value
+
+            val map: Map<String, PokemonCollectionDisplayItem> = visibleTypeList?.let { generateCollections(context, it) }?: emptyMap()
+
+            _visibleCollectionOfTypes.value = map
+
+            val list = _visibleTypesLiveData.value?.map {
                 _visibleCollectionOfTypes.value?.get(it)
             }?.filterNotNull() ?: arrayListOf()
             _collectionsLiveData.value = list
         }
     }
+
+    private suspend fun generateCollections(context: Context, visibleTypeList: List<String>)  = withContext(Dispatchers.IO) {
+            visibleTypeList.let { typeList ->
+                typeList.map { type ->
+                    if (type == MY_POKEMON) {
+                        pokemonRoomRepository.queryCapturePokemonList()
+                            .map {
+                                PokemonDisplayItem(
+                                    it.id, it.name, it.posterUrl,
+                                    it.captured == 1
+                                )
+                            }.let {
+                                Pair(type, PokemonCollectionDisplayItem(type, it, true))
+                            }
+                    } else {
+                        pokemonRoomRepository.queryPokemonEntityListByType(type)
+                            .map {
+                                PokemonDisplayItem(
+                                    it.id,
+                                    it.name,
+                                    it.posterUrl,
+                                    it.captured == 1
+                                )
+                            }.let {
+                                Pair(type, PokemonCollectionDisplayItem(type, it, false))
+                            }
+                    }
+                }
+            }.toMap()
+        }
+
 
     fun updateTypesOfCollections(context: Context) {
         viewModelScope.launch {
@@ -105,7 +114,7 @@ class MainFragmentViewModel(private val pokemonRoomRepository: PokemonRoomReposi
     fun updateMainCollections(context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                _visibleTypes.value?.map {
+                _visibleTypesLiveData.value?.map {
                     Pair(it, pokemonRoomRepository.queryPokemonEntityListByType(it))
                 }
             }
@@ -113,7 +122,7 @@ class MainFragmentViewModel(private val pokemonRoomRepository: PokemonRoomReposi
     }
 
 
-    fun startLoadResource(context: Context){
+    fun startLoadResource(context: Context) {
         viewModelScope.launch {
             val action = withContext(Dispatchers.IO) {
                 pokemonResourceLoader.loadResourceToLocalOnce(context, 30)
@@ -125,7 +134,7 @@ class MainFragmentViewModel(private val pokemonRoomRepository: PokemonRoomReposi
     }
 
 
-    fun catchPokemon(context: Context, id: String){
+    fun catchPokemon(context: Context, id: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 pokemonRoomRepository.catchPokemon(id)
@@ -133,7 +142,7 @@ class MainFragmentViewModel(private val pokemonRoomRepository: PokemonRoomReposi
         }
     }
 
-    fun releasePokemon(context: Context, id: String){
+    fun releasePokemon(context: Context, id: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 pokemonRoomRepository.releasePokemon(id)

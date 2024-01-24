@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     private val mainActivityViewModel: MainActivityViewModel by viewModels()
 
-    private val pokemonResourceLoader :PokemonResourceLoader = PokemonResourceLoader()
+    //private val pokemonResourceLoader :PokemonResourceLoader = PokemonResourceLoader()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -76,6 +76,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        pokemonResourceLoader.stop()
+        //pokemonResourceLoader.stop()
     }
 }

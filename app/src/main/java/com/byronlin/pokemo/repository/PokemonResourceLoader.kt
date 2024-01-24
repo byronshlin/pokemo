@@ -10,9 +10,15 @@ import com.byronlin.pokemo.room.data.PokemonInfo
 import com.byronlin.pokemo.room.data.PokemonResourceResult
 import com.byronlin.pokemo.room.data.SpeciesInfo
 import com.byronlin.pokemo.utils.PKLog
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 
-class PokemonResourceLoader(private val pokemonRoomRepository : PokemonRoomRepository,
-                            private val dataSource : PokemonNetworkDataSource) {
+class PokemonResourceLoader(
+    private val pokemonRoomRepository: PokemonRoomRepository,
+    private val dataSource: PokemonNetworkDataSource
+) {
 
     private val TAG = "PokemonResourceLoader"
 
@@ -29,7 +35,7 @@ class PokemonResourceLoader(private val pokemonRoomRepository : PokemonRoomRepos
     }
 
     @WorkerThread
-    fun startLoadResourceToLocal(context: Context, callback: ((Boolean) -> Unit)? = null) {
+    suspend fun startLoadResourceToLocal(context: Context, callback: ((Boolean) -> Unit)? = null) {
         stop = true
         val queryDao = pokemonRoomRepository.obtainPokemonDatabase(context).queryDao()
         val updateDao = pokemonRoomRepository.obtainPokemonDatabase(context).updateDao()
@@ -64,7 +70,7 @@ class PokemonResourceLoader(private val pokemonRoomRepository : PokemonRoomRepos
 
 
     @WorkerThread
-    fun loadResourceToLocalOnce(context: Context, limit: Int): Boolean {
+    suspend fun loadResourceToLocalOnce(context: Context, limit: Int): Boolean {
         val queryDao = pokemonRoomRepository.obtainPokemonDatabase(context).queryDao()
         val updateDao = pokemonRoomRepository.obtainPokemonDatabase(context).updateDao()
 
@@ -75,7 +81,9 @@ class PokemonResourceLoader(private val pokemonRoomRepository : PokemonRoomRepos
         }
 
         //start load
+        var begin = System.currentTimeMillis()
         val pokemonResourceResult = loadPokemonResource(0, limit) ?: return false
+        PKLog.v(TAG, "loadPokemonResource: ${System.currentTimeMillis() - begin}")
 
         val writeInfo = DataHelper.transferPokemonInfoListToWriteEntityInfo(
             pokemonResourceResult.pokemonInfoList,
@@ -86,33 +94,45 @@ class PokemonResourceLoader(private val pokemonRoomRepository : PokemonRoomRepos
     }
 
 
-    private fun loadPokemonResource(
+    /**
+     * 1. load pokemon resource list
+     * 2. load pokemon info (20 thread) concurrently
+     * 3. load species info (20 thread) concurrently
+     */
+
+    @WorkerThread
+    private suspend fun loadPokemonResource(
         offset: Int,
         limit: Int
-    ): PokemonResourceResult? {
+    ) = withContext(Dispatchers.IO) {
+
+
+        var begin = System.currentTimeMillis()
+        //#1
         val pokemonResource = dataSource.queryPokemonResources(offset, limit)
-        PKLog.v(TAG, "loadPokemonResource: $pokemonResource")
+        PKLog.v(TAG, "queryPokemonResources: ${System.currentTimeMillis() - begin}")
 
-        pokemonResource ?: return null
+        pokemonResource ?: return@withContext null
 
-        val next = pokemonResource.next?.let {
-            Uri.parse(it).getQueryParameter("offset")?.toInt()
-        } ?: pokemonResource.count
+        val pokemonIdList: List<String> =
+            pokemonResource.results.map { it.url.let { Uri.parse(it) }?.lastPathSegment }
+                .filterNotNull()
 
-        val pokemonInfoList: List<PokemonInfo> = pokemonResource.results.map {
-            val name = it.name
-            val pokemonId = it.url.let { Uri.parse(it) }?.lastPathSegment
-            Pair(name, pokemonId)
-        }.filter { it.second != null }
-            .map {
-                val pokemonResponse = dataSource.queryPokemon(it.second!!)
+        begin = System.currentTimeMillis()
+        //#2
+        val deferredList: List<Deferred<PokemonInfo?>> = pokemonIdList.map { pokemonId ->
+            val deferred: Deferred<PokemonInfo?> = async {
+                val pokemonResponse = dataSource.queryPokemon(pokemonId)
+
+                PKLog.v(TAG, "queryPokemon: ${pokemonId} ${pokemonResponse!=null}")
+
                 if (pokemonResponse == null) {
                     null
                 } else {
                     val id = pokemonResponse.id
                     val name = pokemonResponse.name
                     val types: List<String> =
-                        pokemonResponse.types?.map { it.type.name } ?: arrayListOf()
+                        pokemonResponse.types.map { it.type.name } ?: arrayListOf()
 
                     val posterUrl =
                         pokemonResponse.sprites?.spritesOtherResponse?.officialArtworkResponse?.frontDefaultUrl
@@ -124,22 +144,36 @@ class PokemonResourceLoader(private val pokemonRoomRepository : PokemonRoomRepos
                     }
                     PokemonInfo(id, name, types, posterUrl!!, speciesData.second)
                 }
-            }.filterNotNull() ?: arrayListOf()
+            }
+            deferred
+        }
+
+        val pokemonInfoList = deferredList.map {
+            it.await()
+        }.filterNotNull()
 
 
+        PKLog.v(TAG, "load queryPokemon List : for ${pokemonIdList.size} spend=${System.currentTimeMillis() - begin}")
+
+        //#3
         val speciesIds = pokemonInfoList.map {
             it.speciesId
         }.distinct()
 
-
+        begin = System.currentTimeMillis()
         val speciesInfoList = speciesIds.map {
-            dataSource.querySpecies(it)
+            async {
+                //PKLog.v(TAG, "querySpecies: ${it}")
+                dataSource.querySpecies(it)
+            }
+        }.map {
+            it.await()
         }.filterNotNull().map {
             val idFrom =
                 it.evolvesFromSpecies?.url?.let { Uri.parse(it) }?.lastPathSegment
 
             val list = it.flavorTextEntries?.map {
-                DescriptionInfo(language = it.language.name, description= it.flavor_text)
+                DescriptionInfo(language = it.language.name, description = it.flavor_text)
             } ?: arrayListOf()
 
             SpeciesInfo(
@@ -149,7 +183,14 @@ class PokemonResourceLoader(private val pokemonRoomRepository : PokemonRoomRepos
                 list
             )
         }
-        return PokemonResourceResult(
+        PKLog.v(TAG, "load speciesInfoList for ${speciesIds.size} spend=${System.currentTimeMillis() - begin}")
+
+        //save next
+        val next = pokemonResource.next?.let {
+            Uri.parse(it).getQueryParameter("offset")?.toInt()
+        } ?: pokemonResource.count
+
+        return@withContext PokemonResourceResult(
             pokemonInfoList, speciesInfoList,
             next
         )
