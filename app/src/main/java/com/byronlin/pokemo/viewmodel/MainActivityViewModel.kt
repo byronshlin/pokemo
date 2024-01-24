@@ -10,14 +10,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel: ViewModel() {
-    private val pokemonResourceLoader = PokemonResourceLoader()
+    //private val pokemonResourceLoader = PokemonResourceLoader()
     private val _loadCompleteLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
     val loadCompleteLiveData: LiveData<Boolean> = _loadCompleteLiveData
 
     fun startLoadResource(context: Context){
-        viewModelScope.launch(Dispatchers.IO) {
-            pokemonResourceLoader.loadResourceToLocalOnce(context, 151)
-        }
+//        viewModelScope.launch(Dispatchers.IO) {
+//            pokemonResourceLoader.loadResourceToLocalOnce(context, 151)
+//        }
     }
 }

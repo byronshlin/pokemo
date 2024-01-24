@@ -6,40 +6,35 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.byronlin.pokemo.R
 import com.byronlin.pokemo.databinding.FragmentSecondBinding
 import com.byronlin.pokemo.model.PokemonDetails
+import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.viewmodel.DetailViewModel
 
-/**
- * A simple [Fragment] subclass as the second destination in the navigation.
- */
+
 class DetailsFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
-    private val detailViewModel: DetailViewModel by viewModels()
+    private lateinit var detailViewModel: DetailViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
 
 
         binding.fromPokemonImage.setOnClickListener {
             detailViewModel.pokemonDetailLiveData.value?.evolvedPokemon?.id?.let {
-//                findNavController().navigate(R.id.action_DetailsFragment_to_DetailsFragment, Bundle().apply {
-//                    putString("id", it)
-//                })
                 findNavController().navigate(
                     R.id.action_to_DetailFragment,
                     Bundle().apply {
@@ -60,6 +55,14 @@ class DetailsFragment : Fragment() {
     }
 
     private fun initViewModel(){
+        //TODO hilt!!
+        @Suppress("UNCHECKED_CAST")
+        detailViewModel = ViewModelProvider(this, object:ViewModelProvider.NewInstanceFactory(){
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return DetailViewModel(PokemonRoomRepository(requireActivity().application)) as T
+            }
+        })[DetailViewModel::class.java]
+
         detailViewModel.pokemonDetailLiveData.observe(viewLifecycleOwner) {
             renderView(it)
         }

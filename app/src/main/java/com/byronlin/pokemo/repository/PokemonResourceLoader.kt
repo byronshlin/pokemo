@@ -4,21 +4,17 @@ import android.content.Context
 import android.net.Uri
 import androidx.annotation.WorkerThread
 import com.byronlin.pokemo.datasource.PokemonNetworkDataSource
-import com.byronlin.pokemo.room.PokemonRoomHelper
 import com.byronlin.pokemo.room.data.DataHelper
 import com.byronlin.pokemo.room.data.DescriptionInfo
 import com.byronlin.pokemo.room.data.PokemonInfo
 import com.byronlin.pokemo.room.data.PokemonResourceResult
 import com.byronlin.pokemo.room.data.SpeciesInfo
 import com.byronlin.pokemo.utils.PKLog
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
-class PokemonResourceLoader {
+class PokemonResourceLoader(private val pokemonRoomRepository : PokemonRoomRepository,
+                            private val dataSource : PokemonNetworkDataSource) {
 
     private val TAG = "PokemonResourceLoader"
-    private val dataSource = PokemonNetworkDataSource()
 
     private val BATCH_COUNT = 20
 
@@ -27,7 +23,6 @@ class PokemonResourceLoader {
     @Volatile
     private var stop = false
 
-    private val pokemonRoomHelper = PokemonRoomHelper()
 
     fun stop() {
         stop = true
@@ -36,8 +31,8 @@ class PokemonResourceLoader {
     @WorkerThread
     fun startLoadResourceToLocal(context: Context, callback: ((Boolean) -> Unit)? = null) {
         stop = true
-        val queryDao = pokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
-        val updateDao = pokemonRoomHelper.obtainPokemonDatabase(context).updateDao()
+        val queryDao = pokemonRoomRepository.obtainPokemonDatabase(context).queryDao()
+        val updateDao = pokemonRoomRepository.obtainPokemonDatabase(context).updateDao()
 
         val offset = queryDao.queryNext() ?: 0
 
@@ -70,8 +65,8 @@ class PokemonResourceLoader {
 
     @WorkerThread
     fun loadResourceToLocalOnce(context: Context, limit: Int): Boolean {
-        val queryDao = pokemonRoomHelper.obtainPokemonDatabase(context).queryDao()
-        val updateDao = pokemonRoomHelper.obtainPokemonDatabase(context).updateDao()
+        val queryDao = pokemonRoomRepository.obtainPokemonDatabase(context).queryDao()
+        val updateDao = pokemonRoomRepository.obtainPokemonDatabase(context).updateDao()
 
         val offset = queryDao.queryNext() ?: 0
 
