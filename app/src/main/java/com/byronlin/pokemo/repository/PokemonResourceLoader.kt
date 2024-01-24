@@ -68,15 +68,16 @@ class PokemonResourceLoader(
     fun startLoadResourceToLocalAsFlow(context: Context) = flow {
         val queryDao = pokemonRoomRepository.obtainPokemonDatabase(context).queryDao()
         do {
+            PKLog.v(TAG, "startLoadResourceToLocalAsFlow  obtainPokemonDatabase")
             val offset = queryDao.queryNext() ?: 0
 
             if (offset > MAX_SIZE) {
-                emit(offset)
+                emit(-1)
                 break
             }
 
             if (stop) {
-                emit(offset)
+                emit(-1)
                 break
             }
 
@@ -89,10 +90,10 @@ class PokemonResourceLoader(
             //start load
             val next = loadResourceToLocalByBatch(context, offset, limit)
             if (next == -1) {
-                emit(offset)
+                emit(-1)
                 break
             } else {
-                emit(offset)
+                emit(next)
             }
             delay(1000)
         } while (true)
