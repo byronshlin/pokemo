@@ -9,6 +9,8 @@ import com.byronlin.pokemo.room.PokemonRoomDatabase
 import com.byronlin.pokemo.room.entity.CaptureEntity
 import com.byronlin.pokemo.room.entity.PokemonEntity
 import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
+import com.byronlin.pokemo.room.entity.SpeciesDescriptionEntity
+import com.byronlin.pokemo.room.entity.SpeciesEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,6 +32,24 @@ class PokemonRoomRepository @Inject constructor(
     fun queryTypes(): List<String> {
         val queryDao = ensurePokemonDatabase().queryDao()
         return queryDao.queryTypes()
+    }
+
+    fun querySpeciesDescriptionBySpeciesId(id: String): List<SpeciesDescriptionEntity> {
+        val queryDao = ensurePokemonDatabase().queryDao()
+        return queryDao.querySpeciesDescriptionBySpeciesId(id)
+    }
+    fun querySpeciesEntityBySpeciesId(id: String): SpeciesEntity? {
+        val queryDao = ensurePokemonDatabase().queryDao()
+        return queryDao.querySpeciesEntityBySpeciesId(id)
+    }
+    fun queryPokemonEntityById(id: String): PokemonEntity? {
+        val queryDao = ensurePokemonDatabase().queryDao()
+        return queryDao.queryPokemonEntityById(id)
+    }
+
+    fun queryTypesOfPokemon(id: String): List<String> {
+        val queryDao = ensurePokemonDatabase().queryDao()
+        return queryDao.queryTypesOfPokemon(id)
     }
 
     fun queryCapturePokemonList(): List<PokemonEntity> {

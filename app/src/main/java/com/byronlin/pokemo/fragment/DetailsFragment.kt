@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -28,7 +29,7 @@ class DetailsFragment : Fragment() {
 
     private val binding get() = _binding!!
 
-    private lateinit var detailViewModel: DetailViewModel
+    private val detailViewModel: DetailViewModel by viewModels()
     private val args: DetailsFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -50,18 +51,17 @@ class DetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
         args.pokemonId.let {
-            detailViewModel.queryPokemonDetail(requireContext(), it?:"")
+            detailViewModel.queryPokemonDetail(it?:"")
         }
     }
 
     private fun initViewModel(){
-        //TODO hilt!!
-        @Suppress("UNCHECKED_CAST")
-        detailViewModel = ViewModelProvider(this, object:ViewModelProvider.NewInstanceFactory(){
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return DetailViewModel(PokemonRoomRepository(requireActivity().application)) as T
-            }
-        })[DetailViewModel::class.java]
+//        @Suppress("UNCHECKED_CAST")
+//        detailViewModel = ViewModelProvider(this, object:ViewModelProvider.NewInstanceFactory(){
+//            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//                return DetailViewModel(PokemonRoomRepository(requireActivity().application)) as T
+//            }
+//        })[DetailViewModel::class.java]
 
         detailViewModel.pokemonDetailLiveData.observe(viewLifecycleOwner) {
             renderView(it)
