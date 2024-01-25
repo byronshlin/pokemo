@@ -17,14 +17,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pokemo"
         tools:targetApi="31">
+
         <activity
             android:name=".activity.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Pokemo">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|keyboard|uiMode"
+            android:theme="@style/Theme.Pokemo"
+            tools:ignore="RedundantLabel">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
