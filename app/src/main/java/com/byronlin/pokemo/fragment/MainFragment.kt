@@ -44,8 +44,9 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
-        homeViewModel.initMainViews()
+        //homeViewModel.initMainViews()
         //homeViewModel.startLoadResource(requireContext(), false)
+
         homeViewModel.startLoadAllResource(requireContext())
     }
 
@@ -88,11 +89,16 @@ class MainFragment : Fragment() {
         )[MainFragmentViewModel::class.java]
 
         homeViewModel.collectionsLiveData.observe(viewLifecycleOwner) {
-            (binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList(it)
+            //(binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList(it)
         }
 
         homeViewModel.loadCompleteLiveData.observe(viewLifecycleOwner) {
-            homeViewModel.initMainViews()
+            //homeViewModel.initMainViews()
+        }
+
+        homeViewModel.newCollectionListLiveData.observe(viewLifecycleOwner) {
+            PKLog.v(TAG, "newCollectionListLiveData refresh: ${it.size}")
+            (binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList(it)
         }
     }
 
