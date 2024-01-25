@@ -10,7 +10,6 @@ import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.utils.PKLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -18,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val pokemonRoomRepository: PokemonRoomRepository,
-    private val pokemonResourceLoader: PokemonResourceLoader) :
+    private val pokemonResourceLoader: PokemonResourceLoader
+) :
     ViewModel() {
     private val TAG = "MainActivityViewModel"
 
@@ -51,6 +51,7 @@ class MainActivityViewModel @Inject constructor(
             }
         }
     }
+
     enum class LoadStatus {
         START,
         FIRST_LOADED,

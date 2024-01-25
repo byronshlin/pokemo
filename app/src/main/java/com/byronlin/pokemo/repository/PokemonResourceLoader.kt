@@ -16,7 +16,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -103,8 +102,6 @@ class PokemonResourceLoader @Inject constructor(
             delay(1000)
         } while (true)
     }.flowOn(Dispatchers.IO)
-
-
 
 
     private suspend fun loadResourceToLocalByBatch(

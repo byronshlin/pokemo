@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.byronlin.pokemo.R
 import com.byronlin.pokemo.databinding.ItemPokemoBinding
-import com.byronlin.pokemo.model.PokemonCollectionDisplayItem
 import com.byronlin.pokemo.model.PokemonDisplayItem
 
 class PokemonItemAdapter(
@@ -23,7 +22,7 @@ class PokemonItemAdapter(
         notifyDataSetChanged()
     }
 
-    fun updateList2(list: List<PokemonDisplayItem>){
+    fun updateList2(list: List<PokemonDisplayItem>) {
         refreshPageByDiffUtil(list)
     }
 
@@ -124,5 +123,6 @@ class PokemonItemAdapter(
         }
     }
 
-    class PokemonItemViewHolder(val binding: ItemPokemoBinding) : RecyclerView.ViewHolder(binding.root)
+    class PokemonItemViewHolder(val binding: ItemPokemoBinding) :
+        RecyclerView.ViewHolder(binding.root)
 }

@@ -23,7 +23,8 @@ class PokemonCollectionAdapter(
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonCollectionViewHolder {
-        val binding = ItemPokemoCollectionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemPokemoCollectionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PokemonCollectionViewHolder(binding)
     }
 
@@ -35,7 +36,8 @@ class PokemonCollectionAdapter(
         var collectionItem = pokemonCollectionList[position]
         holder.binding.title.text = collectionItem.type
         holder.binding.count.text = collectionItem.pokemonItemList.size.toString()
-        holder.binding.collectionRecyclerView.layoutManager = LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL, false)
+        holder.binding.collectionRecyclerView.layoutManager =
+            LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL, false)
         holder.binding.collectionRecyclerView.adapter =
             PokemonItemAdapter(onPick, onCapture)
                 .apply { this.updateList(collectionItem.pokemonItemList) }
@@ -52,13 +54,13 @@ class PokemonCollectionAdapter(
     }
 
 
-
     private fun refreshPageByDiffUtil(newList: List<PokemonCollectionDisplayItem>) {
         val oldList = ArrayList(pokemonCollectionList)
 
         pokemonCollectionList = newList.toMutableList()
 
-        val diffResultBase = DiffUtil.calculateDiff(PageDiffCallback(oldList, pokemonCollectionList))
+        val diffResultBase =
+            DiffUtil.calculateDiff(PageDiffCallback(oldList, pokemonCollectionList))
 
         diffResultBase.dispatchUpdatesTo(object : ListUpdateCallback {
             override fun onInserted(position: Int, count: Int) {
@@ -120,7 +122,6 @@ class PokemonCollectionAdapter(
     }
 
 
-
-
-    class PokemonCollectionViewHolder(val binding: ItemPokemoCollectionBinding) : RecyclerView.ViewHolder(binding.root)
+    class PokemonCollectionViewHolder(val binding: ItemPokemoCollectionBinding) :
+        RecyclerView.ViewHolder(binding.root)
 }

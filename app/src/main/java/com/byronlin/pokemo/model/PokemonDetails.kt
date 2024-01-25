@@ -1,7 +1,6 @@
 package com.byronlin.pokemo.model
 
 import com.byronlin.pokemo.room.entity.PokemonEntity
-import com.byronlin.pokemo.room.entity.SpeciesEntity
 
 data class PokemonDetails(
     val id: String,

@@ -6,8 +6,10 @@ import com.byronlin.pokemo.room.entity.SpeciesDescriptionEntity
 import com.byronlin.pokemo.room.entity.SpeciesEntity
 
 object DataHelper {
-    fun transferPokemonInfoListToWriteEntityInfo(pokemonInfoList: List<PokemonInfo>,
-                                                 speciesInfoList: List<SpeciesInfo>): WriteEntityInfo {
+    fun transferPokemonInfoListToWriteEntityInfo(
+        pokemonInfoList: List<PokemonInfo>,
+        speciesInfoList: List<SpeciesInfo>
+    ): WriteEntityInfo {
         val speciesEntityList = speciesInfoList.map {
             SpeciesEntity(
                 id = it.id,

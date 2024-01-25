@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import com.byronlin.pokemo.room.data.DataHelper
 import com.byronlin.pokemo.room.data.PokemonInfo
 import com.byronlin.pokemo.room.data.SpeciesInfo
@@ -55,12 +54,16 @@ interface PokemonUpdateDao {
 
     @Query("DELETE FROM pokemon_load")
     fun clearPokemonLoad()
+
     @Query("DELETE FROM pokemon")
     fun clearPokemon()
+
     @Query("DELETE FROM pokemonTypesRelationship")
     fun clearPokemonTypesRelationShip()
+
     @Query("DELETE FROM species")
     fun clearSpecies()
+
     @Query("DELETE FROM speciesDescription")
     fun clearSpeciesDescription()
 
@@ -87,7 +90,8 @@ interface PokemonUpdateDao {
     @Transaction
     fun loadToDatabase(
         writeEntityInfo: WriteEntityInfo,
-        next: Int) {
+        next: Int
+    ) {
         insertOrUpdateSpeciesList(writeEntityInfo.speciesEntityList)
         insertOrUpdateSpeciesDescriptionList(writeEntityInfo.speciesDescriptionEntityList)
         insertOrUpdatePokemonTypeList(writeEntityInfo.pokemonTypesRelationshipEntityList)

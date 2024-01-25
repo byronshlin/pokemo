@@ -1,21 +1,16 @@
 package com.byronlin.pokemo.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.byronlin.pokemo.NavGraphDirections
 import com.byronlin.pokemo.adapter.PokemonCollectionAdapter
 import com.byronlin.pokemo.databinding.FragmentMainBinding
-import com.byronlin.pokemo.datasource.PokemonNetworkDataSource
-import com.byronlin.pokemo.repository.PokemonResourceLoader
-import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.utils.PKLog
 import com.byronlin.pokemo.viewmodel.MainFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint

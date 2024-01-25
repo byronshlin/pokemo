@@ -9,7 +9,6 @@ import com.byronlin.pokemo.room.entity.PokemonTypesRelationshipEntity
 import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
 import com.byronlin.pokemo.room.entity.SpeciesDescriptionEntity
 import com.byronlin.pokemo.room.entity.SpeciesEntity
-import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -56,15 +55,15 @@ interface PokemonQueryDao {
     fun queryTypes(): List<String>
 
     @Query("SELECT id, name, posterUrl, idOfSpecies FROM pokemon JOIN capture WHERE pokemon.id = capture.idOfPokemon ORDER BY capture.timeStamp DESC")
-    fun queryCapturePokemonList() : List<PokemonEntity>
+    fun queryCapturePokemonList(): List<PokemonEntity>
 
     @Query("SELECT * FROM capture WHERE capture.idOfPokemon = :id")
-    fun queryCaptureEntity(id: String) : CaptureEntity?
+    fun queryCaptureEntity(id: String): CaptureEntity?
 
 
     @Query("SELECT * FROM capture")
-    fun queryCaptureList() : List<CaptureEntity>
+    fun queryCaptureList(): List<CaptureEntity>
 
     @Query("SELECT * FROM capture")
-    fun queryCaptureListLiveData() : LiveData<List<CaptureEntity>>
+    fun queryCaptureListLiveData(): LiveData<List<CaptureEntity>>
 }

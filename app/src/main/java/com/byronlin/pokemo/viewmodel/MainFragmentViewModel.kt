@@ -5,12 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.byronlin.pokemo.model.PokemonCollectionDisplayItem
 import com.byronlin.pokemo.model.PokemonDisplayItem
-import com.byronlin.pokemo.repository.PokemonResourceLoader
 import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.room.entity.CaptureEntity
 import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
@@ -28,7 +26,7 @@ class MainFragmentViewModel @Inject constructor(
 ) : ViewModel() {
     private val TAG = "MainFragmentViewModel"
 
-    private val capturedListLiveData : LiveData<List<CaptureEntity>> =
+    private val capturedListLiveData: LiveData<List<CaptureEntity>> =
         pokemonRoomRepository.queryCaptureListLiveData()
 
 
@@ -39,7 +37,7 @@ class MainFragmentViewModel @Inject constructor(
         allDataLiveData.switchMap {
             val newLiveData: MutableLiveData<List<PokemonCollectionDisplayItem>> = MutableLiveData()
             viewModelScope.launch {
-                val list  = withContext(Dispatchers.IO){
+                val list = withContext(Dispatchers.IO) {
                     val dataMap = generateAllDataMap(it)
                     val capturedPokemonCollection = generatePokemonDisplayItem()
                     dataMap[MY_POKEMON] = capturedPokemonCollection
@@ -53,15 +51,12 @@ class MainFragmentViewModel @Inject constructor(
         }
 
 
-
     val mainViewUILiveData: MediatorLiveData<List<PokemonCollectionDisplayItem>> =
         MediatorLiveData()
 
 
     private val _collectionsLiveData: MutableLiveData<List<PokemonCollectionDisplayItem>> =
         MutableLiveData()
-
-
 
 
     val collectionsLiveData: LiveData<List<PokemonCollectionDisplayItem>> = _collectionsLiveData
@@ -90,10 +85,12 @@ class MainFragmentViewModel @Inject constructor(
         }
 
     }
+
     fun initMainViews() {
         viewModelScope.launch {
             val begin = System.currentTimeMillis()
-            val dataMap: Map<String, PokemonCollectionDisplayItem> = generateCollectionsByBatch() //for All
+            val dataMap: Map<String, PokemonCollectionDisplayItem> =
+                generateCollectionsByBatch() //for All
             PKLog.v(
                 "MainFragmentViewModel",
                 "generateCollectionsByBatch: spend = ${System.currentTimeMillis() - begin}"
@@ -197,7 +194,12 @@ class MainFragmentViewModel @Inject constructor(
         val list = pokemonRoomRepository.queryCapturePokemonList().map {
             PokemonDisplayItem(it.id, it.name, it.posterUrl, true)
         }
-        val myPokemonCollection = originalList.find { it.type == MY_POKEMON }?:PokemonCollectionDisplayItem(MY_POKEMON, list.toMutableList(), true)
+        val myPokemonCollection =
+            originalList.find { it.type == MY_POKEMON } ?: PokemonCollectionDisplayItem(
+                MY_POKEMON,
+                list.toMutableList(),
+                true
+            )
         myPokemonCollection.pokemonItemList.clear()
         myPokemonCollection.pokemonItemList.addAll(list)
 

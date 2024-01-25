@@ -1,6 +1,5 @@
 package com.byronlin.pokemo.repository
 
-import android.app.Application
 import android.content.Context
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
@@ -38,10 +37,12 @@ class PokemonRoomRepository @Inject constructor(
         val queryDao = ensurePokemonDatabase().queryDao()
         return queryDao.querySpeciesDescriptionBySpeciesId(id)
     }
+
     fun querySpeciesEntityBySpeciesId(id: String): SpeciesEntity? {
         val queryDao = ensurePokemonDatabase().queryDao()
         return queryDao.querySpeciesEntityBySpeciesId(id)
     }
+
     fun queryPokemonEntityById(id: String): PokemonEntity? {
         val queryDao = ensurePokemonDatabase().queryDao()
         return queryDao.queryPokemonEntityById(id)

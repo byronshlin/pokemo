@@ -6,4 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "pokemon_load")
 data class PokemonLoadEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0, val next: Int, val lastTimeStamp: Long=System.currentTimeMillis())
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val next: Int,
+    val lastTimeStamp: Long = System.currentTimeMillis()
+)

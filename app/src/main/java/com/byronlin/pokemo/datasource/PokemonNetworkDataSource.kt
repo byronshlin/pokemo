@@ -16,7 +16,7 @@ import javax.inject.Singleton
 
 
 @Singleton
-class PokemonNetworkDataSource @Inject constructor(){
+class PokemonNetworkDataSource @Inject constructor() {
     fun queryPokemonResources(offset: Int, limit: Int): NamedAPIResourceList? {
         val retrofit = obtainRetrofit()
         return (try {
