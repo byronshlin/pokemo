@@ -9,7 +9,9 @@ import android.widget.TextView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.byronlin.pokemo.NavGraphDirections
 import com.byronlin.pokemo.R
 import com.byronlin.pokemo.databinding.FragmentSecondBinding
 import com.byronlin.pokemo.model.PokemonDetails
@@ -25,6 +27,7 @@ class DetailsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var detailViewModel: DetailViewModel
+    private val args: DetailsFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,15 +36,9 @@ class DetailsFragment : Fragment() {
         PKLog.v(TAG, "onCreateView")
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
 
-
         binding.fromPokemonImage.setOnClickListener {
             detailViewModel.pokemonDetailLiveData.value?.evolvedPokemon?.id?.let {
-                findNavController().navigate(
-                    R.id.action_to_DetailFragment,
-                    Bundle().apply {
-                        putString("id", it)
-                    }
-                )
+                findNavController().navigate(NavGraphDirections.actionToDetailFragment(it))
             }
         }
         return binding.root
@@ -50,8 +47,8 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
-        arguments?.getString("id")?.let {
-            detailViewModel.queryPokemonDetail(requireContext(), it)
+        args.pokemonId.let {
+            detailViewModel.queryPokemonDetail(requireContext(), it?:"")
         }
     }
 

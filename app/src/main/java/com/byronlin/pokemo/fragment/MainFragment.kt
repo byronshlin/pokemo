@@ -7,8 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavDirections
+import androidx.navigation.NavGraphNavigator
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.byronlin.pokemo.NavGraphDirections
 import com.byronlin.pokemo.R
 import com.byronlin.pokemo.adapter.PokemonCollectionAdapter
 import com.byronlin.pokemo.databinding.FragmentMainBinding
@@ -57,9 +60,7 @@ class MainFragment : Fragment() {
 
 
     private fun onPick(id: String) {
-        val bundle = Bundle()
-        bundle.putString("id", id)
-        findNavController().navigate(R.id.action_to_DetailFragment, bundle)
+        findNavController().navigate(NavGraphDirections.actionToDetailFragment(id))
     }
 
     private fun onCapture(id: String, captured: Boolean) {

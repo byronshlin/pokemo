@@ -11,147 +11,147 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
-        
+
         <ImageView
             android:id="@+id/back_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/baseline_arrow_back_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintVertical_bias="0"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0" />
+
         <TextView
             android:id="@+id/id_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
             android:textColor="@color/black"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="@dimen/description_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0"
-            tools:text="#1"
-            />
+            tools:text="#1" />
 
         <ImageView
             android:id="@+id/pokemon_image"
             android:layout_width="160dp"
             android:layout_height="160dp"
-            app:layout_constraintTop_toBottomOf="@+id/back_btn"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="60dp"
+            android:src="@drawable/fake"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:src="@drawable/fake"
-            app:layout_constraintVertical_bias="0"
-            android:layout_marginTop="60dp"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/back_btn"
+            app:layout_constraintVertical_bias="0" />
 
         <TextView
             android:id="@+id/pokemon_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
+            android:layout_marginTop="10dp"
             android:fontFamily="sans-serif"
-            app:layout_constraintTop_toBottomOf="@+id/pokemon_image"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textColor="@color/black"
+            android:textSize="@dimen/pokemon_name_text_size"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pokemon_image"
             app:layout_constraintVertical_bias="0"
-            android:layout_marginTop="10dp"
-            tools:text="Picachu"
-            />
+            tools:text="Picachu" />
 
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/type_box"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:flexWrap="wrap"
             app:alignContent="center"
             app:alignItems="center"
-            app:showDividerHorizontal="middle"
-            app:showDividerVertical="middle"
-            app:layout_constraintTop_toBottomOf="@+id/pokemon_name"
-            app:layout_constraintStart_toStartOf="parent"
+            app:dividerDrawableHorizontal="@drawable/shape_rectangle_base_divider_10dp"
+            app:dividerDrawableVertical="@drawable/shape_rectangle_base_divider_10dp"
+            app:flexWrap="wrap"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pokemon_name"
             app:layout_constraintVertical_bias="0"
-            app:dividerDrawableHorizontal="@drawable/shape_rectangle_base_divider_2dp"
-            app:dividerDrawableVertical="@drawable/shape_rectangle_base_divider_2dp"
-            />
+            app:showDividerHorizontal="middle"
+            app:showDividerVertical="middle">
+            <!--            <include layout="@layout/label_type" />-->
+            <!--            <include layout="@layout/label_type" />-->
+            <!--            <include layout="@layout/label_type" />-->
+
+        </com.google.android.flexbox.FlexboxLayout>
+
 
         <TextView
             android:id="@+id/evolves_from"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:text="@string/evolves_from"
             android:textColor="@color/black"
-            app:layout_constraintTop_toBottomOf="@+id/type_box"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="@dimen/description_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintVertical_bias="0"
             app:layout_constraintHorizontal_bias="0"
-            android:text="Evolves from"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/type_box"
+            app:layout_constraintVertical_bias="0" />
 
         <TextView
             android:id="@+id/from_pokemon_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
-            app:layout_constraintTop_toBottomOf="@+id/evolves_from"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintVertical_bias="0"
             app:layout_constraintHorizontal_bias="0"
-            tools:text="Small Pikachu"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/evolves_from"
+            app:layout_constraintVertical_bias="0"
+            tools:text="Small Pikachu" />
 
         <ImageView
             android:id="@+id/from_pokemon_image"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            app:layout_constraintTop_toTopOf="@+id/evolves_from"
-            app:layout_constraintStart_toStartOf="parent"
+            android:importantForAccessibility="no"
+            android:src="@drawable/fake"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintVertical_bias="0"
             app:layout_constraintHorizontal_bias="1"
-            android:src="@drawable/fake"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/evolves_from"
+            app:layout_constraintVertical_bias="0" />
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/evolved_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="evolves_from,from_pokemon_name,from_pokemon_image"
             android:visibility="visible"
-            />
+            app:constraint_referenced_ids="evolves_from,from_pokemon_name,from_pokemon_image" />
 
         <TextView
             android:id="@+id/species_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:layout_marginTop="60dp"
             android:textColor="@color/black"
-            app:layout_constraintTop_toBottomOf="@+id/from_pokemon_image"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="@dimen/description_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintVertical_bias="0"
             app:layout_constraintHorizontal_bias="0"
-            android:layout_marginTop="60dp"
-            android:text="Spit fires" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/from_pokemon_image"
+            app:layout_constraintVertical_bias="0"
+            tools:text="Spit fires" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
