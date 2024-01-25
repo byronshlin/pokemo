@@ -179,6 +179,12 @@ class RoomPokemonTest {
             Assert.assertEquals(pokemonTypeRelationshipSize, result.size)
         }
 
+        val liveData = db.queryDao().queryPokemonEntityLiveDataById("1")
+
+
+        liveData.observeForever {
+
+        }
     }
 
 

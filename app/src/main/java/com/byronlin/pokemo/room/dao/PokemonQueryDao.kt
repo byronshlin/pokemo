@@ -1,5 +1,6 @@
 package com.byronlin.pokemo.room.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.byronlin.pokemo.room.entity.PokemonEntity
@@ -52,4 +53,9 @@ interface PokemonQueryDao {
 
     @Query("SELECT * FROM pokemon WHERE captured = 1")
     fun queryCapturePokemonList() : List<PokemonEntity>
+
+
+    @Query("SELECT * FROM pokemon WHERE id = :id")
+    fun queryPokemonEntityLiveDataById(id: String): LiveData<PokemonEntity>
+
 }
