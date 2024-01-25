@@ -8,8 +8,13 @@ import androidx.room.Room
 import com.byronlin.pokemo.room.PokemonRoomDatabase
 import com.byronlin.pokemo.room.entity.PokemonEntity
 import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PokemonRoomRepository(private val application: Application) {
+@Singleton
+class PokemonRoomRepository  @Inject constructor(
+    @ApplicationContext private val context: Context) {
     @WorkerThread
     fun obtainPokemonDatabase(context: Context): PokemonRoomDatabase {
         return getDatabase(context)
@@ -53,7 +58,7 @@ class PokemonRoomRepository(private val application: Application) {
     }
 
     private fun ensurePokemonDatabase(): PokemonRoomDatabase {
-        return obtainPokemonDatabase(application)
+        return obtainPokemonDatabase(context)
     }
 
 

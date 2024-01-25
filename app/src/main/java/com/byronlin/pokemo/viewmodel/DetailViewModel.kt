@@ -5,14 +5,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.Insert
 import com.byronlin.pokemo.model.PokemonDetails
 import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.room.entity.PokemonEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class DetailViewModel(private val roomHelper : PokemonRoomRepository) : ViewModel() {
+@HiltViewModel
+class DetailViewModel @Inject constructor(private val roomHelper : PokemonRoomRepository) : ViewModel() {
 
     val _pokemonDetailLiveData: MutableLiveData<PokemonDetails> = MutableLiveData()
     val pokemonDetailLiveData: LiveData<PokemonDetails> = _pokemonDetailLiveData

@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -17,10 +18,12 @@ import com.byronlin.pokemo.repository.PokemonResourceLoader
 import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.utils.PKLog
 import com.byronlin.pokemo.viewmodel.MainFragmentViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
+@AndroidEntryPoint
 class MainFragment : Fragment() {
     private val TAG = "MainFragment"
     private var _binding: FragmentMainBinding? = null
@@ -29,7 +32,7 @@ class MainFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var homeViewModel: MainFragmentViewModel
+    private val homeViewModel: MainFragmentViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,7 +50,6 @@ class MainFragment : Fragment() {
         //homeViewModel.initMainViews()
         //homeViewModel.startLoadResource(requireContext(), false)
 
-        homeViewModel.startLoadAllResource(requireContext())
     }
 
     private fun renderView() {
@@ -71,22 +73,17 @@ class MainFragment : Fragment() {
 
     private fun initViewModel() {
         //TODO hilt!!
-        val pokemonRoomRepository = PokemonRoomRepository(requireActivity().application)
-        val pokemonResourceLoader = PokemonResourceLoader(
-            pokemonRoomRepository,
-            PokemonNetworkDataSource()
-        )
-        @Suppress("UNCHECKED_CAST")
-        homeViewModel = ViewModelProvider(this,
-            object : ViewModelProvider.NewInstanceFactory() {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return MainFragmentViewModel(
-                        pokemonRoomRepository,
-                        pokemonResourceLoader
-                    ) as T
-                }
-            }
-        )[MainFragmentViewModel::class.java]
+//        val pokemonRoomRepository = PokemonRoomRepository(requireActivity().application)
+//        @Suppress("UNCHECKED_CAST")
+//        homeViewModel = ViewModelProvider(this,
+//            object : ViewModelProvider.NewInstanceFactory() {
+//                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//                    return MainFragmentViewModel(
+//                        pokemonRoomRepository
+//                    ) as T
+//                }
+//            }
+//        )[MainFragmentViewModel::class.java]
 
         homeViewModel.collectionsLiveData.observe(viewLifecycleOwner) {
             //(binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList(it)

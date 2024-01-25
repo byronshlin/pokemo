@@ -13,13 +13,16 @@ import com.byronlin.pokemo.repository.PokemonResourceLoader
 import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
 import com.byronlin.pokemo.utils.PKLog
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class MainFragmentViewModel(
-    private val pokemonRoomRepository: PokemonRoomRepository,
-    private val pokemonResourceLoader: PokemonResourceLoader
+
+@HiltViewModel
+class MainFragmentViewModel @Inject constructor(
+    private val pokemonRoomRepository: PokemonRoomRepository
 ) : ViewModel() {
     private val TAG = "MainFragmentViewModel"
 
@@ -146,17 +149,6 @@ class MainFragmentViewModel(
             dataMap[MY_POKEMON] = capturedPokemonCollection
             return@withContext dataMap
         }
-    fun startLoadAllResource(context: Context) {
-        viewModelScope.launch {
-            pokemonResourceLoader.startLoadResourceToLocalAsFlow(context)
-                .collect { offset ->
-                    PKLog.v(TAG, "startLoadAllResource: emit!! = ${offset}")
-                    if (offset > 0) {
-                        _loadCompleteLiveData.value = true
-                    }
-                }
-        }
-    }
 
     fun catchPokemon(context: Context, id: String) {
         viewModelScope.launch {

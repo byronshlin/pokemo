@@ -18,8 +18,10 @@ import com.byronlin.pokemo.model.PokemonDetails
 import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.utils.PKLog
 import com.byronlin.pokemo.viewmodel.DetailViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class DetailsFragment : Fragment() {
     private val TAG = "DetailsFragment"
     private var _binding: FragmentSecondBinding? = null

@@ -11,12 +11,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
-class PokemonNetworkDataSource {
-
-
-
+@Singleton
+class PokemonNetworkDataSource @Inject constructor(){
     fun queryPokemonResources(offset: Int, limit: Int): NamedAPIResourceList? {
         val retrofit = obtainRetrofit()
         return (try {

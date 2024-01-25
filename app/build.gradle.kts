@@ -1,10 +1,22 @@
 plugins {
+
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("androidx.navigation.safeargs.kotlin")
+    kotlin("kapt")
     id("kotlin-parcelize")
     id("kotlin-android")
     id("kotlin-kapt")
-    id("androidx.navigation.safeargs")
+    id("com.google.dagger.hilt.android")
+
+
+
+//    id("kotlin-parcelize")
+//    id("kotlin-android")
+//    id("kotlin-kapt")
+//    id("androidx.navigation.safeargs")
+//    kotlin("kapt")
+//    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -92,6 +104,13 @@ dependencies {
     testImplementation("androidx.room:room-testing:$room_version")
     implementation("androidx.room:room-guava:$room_version")
 
+
+    // Hilt
+    //val hilt_version = "2.44"
+    implementation("com.google.dagger:hilt-android:2.50")
+    kapt("com.google.dagger:hilt-android-compiler:2.50")
+
+
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 
 
@@ -125,4 +144,10 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.2.0")
     //Mockk for Kotlin
     testImplementation("io.mockk:mockk:1.12.4")
+}
+
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }

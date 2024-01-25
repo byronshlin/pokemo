@@ -16,9 +16,14 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PokemonResourceLoader(
+
+@Singleton
+class PokemonResourceLoader @Inject constructor(
     private val pokemonRoomRepository: PokemonRoomRepository,
     private val dataSource: PokemonNetworkDataSource
 ) {
@@ -100,19 +105,7 @@ class PokemonResourceLoader(
     }.flowOn(Dispatchers.IO)
 
 
-    @WorkerThread
-    suspend fun loadResourceToLocalOnce(context: Context, limit: Int, continueLoad: Boolean): Boolean {
-        val queryDao = pokemonRoomRepository.obtainPokemonDatabase(context).queryDao()
-        val offset = queryDao.queryNext() ?: 0
-        PKLog.v(TAG, "loadResourceToLocalOnce: offset = ${offset}")
-        if (!continueLoad && offset > 0) {
-            return false
-        }
-        val begin = System.currentTimeMillis()
-        val next = loadResourceToLocalByBatch(context, offset, limit)
-        PKLog.v(TAG, "loadResourceToLocal~: response = ${next} spend = ${System.currentTimeMillis() - begin}")
-        return true
-    }
+
 
     private suspend fun loadResourceToLocalByBatch(
         context: Context,
