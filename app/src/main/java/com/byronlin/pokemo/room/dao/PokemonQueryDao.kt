@@ -12,8 +12,6 @@ import com.byronlin.pokemo.room.entity.SpeciesEntity
 
 @Dao
 interface PokemonQueryDao {
-
-
     @Query("SELECT next FROM pokemon_load ORDER BY lastTimeStamp DESC LIMIT 1")
     fun queryNext(): Int?
 
@@ -39,6 +37,10 @@ interface PokemonQueryDao {
     @Query("SELECT pokemon.id AS id, pokemon.name AS name, pokemon.posterUrl AS posterUrl, idOfSpecies,  pokemon.captured As captured, pokemonTypesRelationship.type AS type FROM pokemon, pokemonTypesRelationship WHERE pokemon.id = pokemonTypesRelationship.idOfPokemon")
     fun queryPokemonTypePairList(): List<PokemonWithTypeEntity>
 
+    @Query("SELECT pokemon.id AS id, pokemon.name AS name, pokemon.posterUrl AS posterUrl, idOfSpecies,  pokemon.captured As captured, pokemonTypesRelationship.type AS type FROM pokemon, pokemonTypesRelationship WHERE pokemon.id = pokemonTypesRelationship.idOfPokemon")
+    fun queryPokemonTypePairListLiveData(): LiveData<List<PokemonWithTypeEntity>>
+
+
     @Query("SELECT pokemon.id AS id, pokemon.name AS name, pokemon.posterUrl AS posterUrl, idOfSpecies,  pokemon.captured As captured, pokemonTypesRelationship.type AS type FROM pokemon, pokemonTypesRelationship WHERE pokemon.id = pokemonTypesRelationship.idOfPokemon AND type IN (:types)")
     fun queryPokemonTypePairListByTypes(types: Array<String>): List<PokemonWithTypeEntity>
 
@@ -48,14 +50,9 @@ interface PokemonQueryDao {
     @Query("SELECT type FROM pokemonTypesRelationship WHERE idOfPokemon = :id")
     fun queryTypesOfPokemon(id: String): List<String>
 
-    @Query("SELECT DISTINCT type FROM pokemonTypesRelationship")
+    @Query("SELECT DISTINCT type FROM pokemonTypesRelationship order by type ASC")
     fun queryTypes(): List<String>
 
     @Query("SELECT * FROM pokemon WHERE captured = 1")
     fun queryCapturePokemonList() : List<PokemonEntity>
-
-
-    @Query("SELECT * FROM pokemon WHERE id = :id")
-    fun queryPokemonEntityLiveDataById(id: String): LiveData<PokemonEntity>
-
 }

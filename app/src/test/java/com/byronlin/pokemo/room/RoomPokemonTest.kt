@@ -1,6 +1,7 @@
 package com.byronlin.pokemo.room
 
 import android.content.Context
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -13,6 +14,7 @@ import com.byronlin.pokemo.room.data.SpeciesInfo
 import com.byronlin.pokemo.room.entity.CaptureEntity
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -22,6 +24,9 @@ class RoomPokemonTest {
     private lateinit var db: PokemonRoomDatabase
     private lateinit var pokemonUpdateDao: PokemonUpdateDao
     private lateinit var pokemonQueryDao: PokemonQueryDao
+
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
 
     @Before
@@ -177,13 +182,6 @@ class RoomPokemonTest {
             println(result.size)
             println(result[0])
             Assert.assertEquals(pokemonTypeRelationshipSize, result.size)
-        }
-
-        val liveData = db.queryDao().queryPokemonEntityLiveDataById("1")
-
-
-        liveData.observeForever {
-
         }
     }
 

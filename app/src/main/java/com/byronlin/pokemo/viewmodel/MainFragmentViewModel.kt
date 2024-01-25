@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.byronlin.pokemo.model.PokemonCollectionDisplayItem
 import com.byronlin.pokemo.model.PokemonDisplayItem
@@ -13,7 +12,6 @@ import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
 import com.byronlin.pokemo.utils.PKLog
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -23,25 +21,15 @@ class MainFragmentViewModel(
 ) : ViewModel() {
     private val TAG = "MainFragmentViewModel"
 
-    private val INIT_TYPE_NUMBER = Int.MAX_VALUE
 
     private val _collectionsLiveData: MutableLiveData<List<PokemonCollectionDisplayItem>> =
         MutableLiveData()
 
-    private val _pokemonTypesLiveData: MutableLiveData<List<String>> = MutableLiveData()
 
-    private val _visibleCollectionOfTypes: MutableLiveData<Map<String, PokemonCollectionDisplayItem>> =
+    private val _TypeAndCollectionMapLiveData: MutableLiveData<Map<String, PokemonCollectionDisplayItem>> =
         MutableLiveData()
 
     val collectionsLiveData: LiveData<List<PokemonCollectionDisplayItem>> = _collectionsLiveData
-    val pokemonTypesLiveData: LiveData<List<String>> = _pokemonTypesLiveData
-
-    val visibleMainCollectionOfTypes: LiveData<Map<String, PokemonCollectionDisplayItem>> =
-        _visibleCollectionOfTypes
-
-    val _visibleTypesLiveData: MutableLiveData<List<String>> = MutableLiveData()
-
-    val visibleTypesLiveData: LiveData<List<String>> = _visibleTypesLiveData
 
     private val MY_POKEMON = "My Pokemon"
 
@@ -51,35 +39,28 @@ class MainFragmentViewModel(
 
     private var isLoading = false
 
-    fun initMainViews(context: Context) {
+    fun initMainViews() {
         viewModelScope.launch {
-
-            val types = withContext(Dispatchers.IO) {
+            val typeList = withContext(Dispatchers.IO) {
                 pokemonRoomRepository.queryTypes()
             }
-            _pokemonTypesLiveData.value = types
 
             val visibleTypeList = mutableListOf<String>().apply {
                 add(MY_POKEMON)
-                addAll(types)
+                addAll(typeList)
             }
-
-            _visibleTypesLiveData.value = visibleTypeList
-
             val begin = System.currentTimeMillis()
             val dataMap: Map<String, PokemonCollectionDisplayItem> =
-                //generateCollections(visibleTypeList)
-                generateCollectionsByBatch(null) //for All
+                generateCollectionsByBatch() //for All
             PKLog.v(
                 "MainFragmentViewModel",
                 "generateCollectionsByBatch: spend = ${System.currentTimeMillis() - begin}"
             )
-
             val list = visibleTypeList.map {
                 dataMap[it]
             }.filterNotNull() ?: arrayListOf()
 
-            _visibleCollectionOfTypes.value = dataMap
+            _TypeAndCollectionMapLiveData.value = dataMap
             _collectionsLiveData.value = list
         }
     }
@@ -121,67 +102,35 @@ class MainFragmentViewModel(
             }.toMap()
         }
 
-    private suspend fun generateCollectionsByBatch(visibleTypeList: List<String>? = null) =
+    private suspend fun generateCollectionsByBatch() =
         withContext(Dispatchers.IO) {
             val dataMap: MutableMap<String, PokemonCollectionDisplayItem> = mutableMapOf()
-            if (visibleTypeList == null) {
-                val list: List<PokemonWithTypeEntity> =
-                    pokemonRoomRepository.queryPokemonTypePairList()
+            val list: List<PokemonWithTypeEntity> = pokemonRoomRepository.queryPokemonTypePairList()
 
-                list.forEach { pokemonWithTypeEntity ->
-                    dataMap[pokemonWithTypeEntity.type]?.also { pokemonCollectionDisplayItem ->
-                        pokemonCollectionDisplayItem.pokemonItemList.add(
-                            PokemonDisplayItem(
-                                pokemonWithTypeEntity.id,
-                                pokemonWithTypeEntity.name,
-                                pokemonWithTypeEntity.posterUrl,
-                                pokemonWithTypeEntity.captured == 1
-                            )
+            list.forEach { pokemonWithTypeEntity ->
+                dataMap[pokemonWithTypeEntity.type]?.also { pokemonCollectionDisplayItem ->
+                    pokemonCollectionDisplayItem.pokemonItemList.add(
+                        PokemonDisplayItem(
+                            pokemonWithTypeEntity.id,
+                            pokemonWithTypeEntity.name,
+                            pokemonWithTypeEntity.posterUrl,
+                            pokemonWithTypeEntity.captured == 1
                         )
-                    } ?: run {
-                        val item = PokemonCollectionDisplayItem(
-                            pokemonWithTypeEntity.type,
-                            arrayListOf(), false
+                    )
+                } ?: run {
+                    val item = PokemonCollectionDisplayItem(
+                        pokemonWithTypeEntity.type,
+                        arrayListOf(), false
+                    )
+                    dataMap[pokemonWithTypeEntity.type] = item
+                    item.pokemonItemList.add(
+                        PokemonDisplayItem(
+                            pokemonWithTypeEntity.id,
+                            pokemonWithTypeEntity.name,
+                            pokemonWithTypeEntity.posterUrl,
+                            pokemonWithTypeEntity.captured == 1
                         )
-                        dataMap[pokemonWithTypeEntity.type] = item
-                        item.pokemonItemList.add(
-                            PokemonDisplayItem(
-                                pokemonWithTypeEntity.id,
-                                pokemonWithTypeEntity.name,
-                                pokemonWithTypeEntity.posterUrl,
-                                pokemonWithTypeEntity.captured == 1
-                            )
-                        )
-                    }
-                }
-            } else {
-                val list: List<PokemonWithTypeEntity> =
-                    pokemonRoomRepository.queryPokemonTypePairListByTypes(visibleTypeList)
-                list.forEach { pokemonWithTypeEntity ->
-                    dataMap[pokemonWithTypeEntity.type]?.also { pokemonCollectionDisplayItem ->
-                        pokemonCollectionDisplayItem.pokemonItemList.add(
-                            PokemonDisplayItem(
-                                pokemonWithTypeEntity.id,
-                                pokemonWithTypeEntity.name,
-                                pokemonWithTypeEntity.posterUrl,
-                                pokemonWithTypeEntity.captured == 1
-                            )
-                        )
-                    } ?: run {
-                        val item = PokemonCollectionDisplayItem(
-                            pokemonWithTypeEntity.type,
-                            arrayListOf(), false
-                        )
-                        dataMap[pokemonWithTypeEntity.type] = item
-                        item.pokemonItemList.add(
-                            PokemonDisplayItem(
-                                pokemonWithTypeEntity.id,
-                                pokemonWithTypeEntity.name,
-                                pokemonWithTypeEntity.posterUrl,
-                                pokemonWithTypeEntity.captured == 1
-                            )
-                        )
-                    }
+                    )
                 }
             }
 
@@ -198,26 +147,6 @@ class MainFragmentViewModel(
                 }
             return@withContext dataMap
         }
-
-    fun startLoadResource(context: Context, continueLoad: Boolean) {
-        viewModelScope.launch {
-
-            if (isLoading) {
-                return@launch
-            }
-
-            isLoading = true
-            val action = withContext(Dispatchers.IO) {
-                pokemonResourceLoader.loadResourceToLocalOnce(context, 20, continueLoad)
-            }
-            if (action) {
-                _loadCompleteLiveData.value = true
-            }
-            isLoading = false
-        }
-    }
-
-    //startLoadResourceToLocalAsFlow
 
     fun startLoadAllResource(context: Context) {
         viewModelScope.launch {
@@ -236,10 +165,10 @@ class MainFragmentViewModel(
             withContext(Dispatchers.IO) {
                 pokemonRoomRepository.catchPokemon(id)
             }
-            val dataMap = _visibleCollectionOfTypes.value?.toMutableMap() ?: mutableMapOf()
+            val dataMap = _TypeAndCollectionMapLiveData.value?.toMutableMap() ?: mutableMapOf()
             val originalList = _collectionsLiveData.value?: arrayListOf()
             updateMyPocket(dataMap, originalList).also {
-                _visibleCollectionOfTypes.value = it.first!!
+                _TypeAndCollectionMapLiveData.value = it.first!!
                 _collectionsLiveData.value = it.second!!
             }
         }
@@ -250,10 +179,10 @@ class MainFragmentViewModel(
             withContext(Dispatchers.IO) {
                 pokemonRoomRepository.releasePokemon(id)
             }
-            val dataMap = _visibleCollectionOfTypes.value?.toMutableMap() ?: mutableMapOf()
+            val dataMap = _TypeAndCollectionMapLiveData.value?.toMutableMap() ?: mutableMapOf()
             val originalList = _collectionsLiveData.value?: arrayListOf()
             updateMyPocket(dataMap, originalList).also {
-                _visibleCollectionOfTypes.value = it.first!!
+                _TypeAndCollectionMapLiveData.value = it.first!!
                 _collectionsLiveData.value = it.second!!
             }
         }

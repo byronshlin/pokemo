@@ -3,6 +3,7 @@ package com.byronlin.pokemo.repository
 import android.app.Application
 import android.content.Context
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.byronlin.pokemo.room.PokemonRoomDatabase
 import com.byronlin.pokemo.room.entity.PokemonEntity
@@ -40,10 +41,12 @@ class PokemonRoomRepository(private val application: Application) {
         return queryDao.queryPokemonTypePairList()
     }
 
-    fun queryPokemonTypePairListByTypes(typeList: List<String>): List<PokemonWithTypeEntity> {
+    fun queryPokemonTypePairListLiveData(): LiveData<List<PokemonWithTypeEntity>> {
         val queryDao = ensurePokemonDatabase().queryDao()
-        return queryDao.queryPokemonTypePairListByTypes(typeList.toTypedArray())
+        return queryDao.queryPokemonTypePairListLiveData()
     }
+
+
 
     fun queryPokemonEntityListByType(type: String): List<PokemonEntity> {
         val queryDao = ensurePokemonDatabase().queryDao()

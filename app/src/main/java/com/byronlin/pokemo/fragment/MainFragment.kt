@@ -7,12 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavDirections
-import androidx.navigation.NavGraphNavigator
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.byronlin.pokemo.NavGraphDirections
-import com.byronlin.pokemo.R
 import com.byronlin.pokemo.adapter.PokemonCollectionAdapter
 import com.byronlin.pokemo.databinding.FragmentMainBinding
 import com.byronlin.pokemo.datasource.PokemonNetworkDataSource
@@ -47,7 +44,7 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
-        homeViewModel.initMainViews(requireContext())
+        homeViewModel.initMainViews()
         //homeViewModel.startLoadResource(requireContext(), false)
         homeViewModel.startLoadAllResource(requireContext())
     }
@@ -95,7 +92,7 @@ class MainFragment : Fragment() {
         }
 
         homeViewModel.loadCompleteLiveData.observe(viewLifecycleOwner) {
-            homeViewModel.initMainViews(requireContext())
+            homeViewModel.initMainViews()
         }
     }
 

@@ -24,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-
+    private val TAG = "MainActivity"
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
@@ -62,9 +62,31 @@ class MainActivity : AppCompatActivity() {
                 || super.onSupportNavigateUp()
     }
 
+    override fun onStart() {
+        super.onStart()
+    }
+
+    override fun onLocalVoiceInteractionStopped() {
+        super.onLocalVoiceInteractionStopped()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        PKLog.v(TAG, "onStop")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        PKLog.v(TAG, "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        PKLog.v(TAG, "onPause")
+    }
 
     override fun onDestroy() {
         super.onDestroy()
-        //pokemonResourceLoader.stop()
+        PKLog.v(TAG, "onDestroy")
     }
 }
