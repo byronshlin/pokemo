@@ -41,39 +41,10 @@ class PokemonResourceLoader @Inject constructor(
         stop = true
     }
 
-    @WorkerThread
-    suspend fun startLoadResourceToLocal(context: Context, callback: ((Boolean) -> Unit)? = null) {
-        stop = true
-        val queryDao = pokemonRoomRepository.obtainPokemonDatabase(context).queryDao()
-        val updateDao = pokemonRoomRepository.obtainPokemonDatabase(context).updateDao()
-
-        val offset = queryDao.queryNext() ?: 0
-
-        if (offset > MAX_SIZE) {
-            callback?.invoke(true)
-            return
-        }
-
-        if (stop) {
-            callback?.invoke(false)
-            return
-        }
-        //start load
-        val next = loadResourceToLocalByBatch(context, offset, BATCH_COUNT)
-        if (next == -1) {
-            callback?.invoke(false)
-            return
-        } else {
-            callback?.invoke(false)
-        }
-    }
-
-
     fun startLoadResourceToLocalAsFlow(context: Context) = flow {
-        val queryDao = pokemonRoomRepository.obtainPokemonDatabase(context).queryDao()
         do {
             PKLog.v(TAG, "startLoadResourceToLocalAsFlow  obtainPokemonDatabase")
-            val offset = queryDao.queryNext() ?: 0
+            val offset = pokemonRoomRepository.queryNext()
 
             if (offset > MAX_SIZE) {
                 emit(-1)
@@ -92,7 +63,7 @@ class PokemonResourceLoader @Inject constructor(
             }
 
             //start load
-            val next = loadResourceToLocalByBatch(context, offset, limit)
+            val next = loadResourceToLocalByBatch(offset, limit)
             if (next == -1) {
                 emit(-1)
                 break
@@ -105,11 +76,9 @@ class PokemonResourceLoader @Inject constructor(
 
 
     private suspend fun loadResourceToLocalByBatch(
-        context: Context,
         offset: Int,
         limit: Int
     ): Int {
-        val updateDao = pokemonRoomRepository.obtainPokemonDatabase(context).updateDao()
         var begin = System.currentTimeMillis()
         val pokemonResourceResult = loadPokemonResource(offset, limit) ?: return -1
 
@@ -119,7 +88,7 @@ class PokemonResourceLoader @Inject constructor(
             pokemonResourceResult.pokemonInfoList,
             pokemonResourceResult.speciesInfoList
         )
-        updateDao.loadToDatabase(writeInfo, pokemonResourceResult.next)
+        pokemonRoomRepository.loadToDatabase(writeInfo, pokemonResourceResult.next)
         return pokemonResourceResult.next
     }
 

@@ -87,6 +87,7 @@ interface PokemonUpdateDao {
         insertLoadRecord(PokemonLoadEntity(next = next))
     }
 
+
     @Transaction
     fun loadToDatabase(
         writeEntityInfo: WriteEntityInfo,

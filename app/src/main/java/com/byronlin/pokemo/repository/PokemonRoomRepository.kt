@@ -5,6 +5,9 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.byronlin.pokemo.room.PokemonRoomDatabase
+import com.byronlin.pokemo.room.data.PokemonInfo
+import com.byronlin.pokemo.room.data.SpeciesInfo
+import com.byronlin.pokemo.room.data.WriteEntityInfo
 import com.byronlin.pokemo.room.entity.CaptureEntity
 import com.byronlin.pokemo.room.entity.PokemonEntity
 import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
@@ -16,11 +19,32 @@ import javax.inject.Singleton
 
 @Singleton
 class PokemonRoomRepository @Inject constructor(
-    @ApplicationContext private val context: Context
+    private val roomDatabase: PokemonRoomDatabase
 ) {
-    @WorkerThread
-    fun obtainPokemonDatabase(context: Context): PokemonRoomDatabase {
-        return getDatabase(context)
+
+    fun queryNext(): Int {
+        return ensurePokemonDatabase().queryDao().queryNext()?:0
+    }
+    fun loadToDatabase(
+        pokemonInfoList: List<PokemonInfo>,
+        speciesInfoList: List<SpeciesInfo>,
+        next: Int
+    ){
+        ensurePokemonDatabase().updateDao().loadToDatabase(
+            pokemonInfoList,
+            speciesInfoList,
+            next
+        )
+    }
+
+    fun loadToDatabase(
+        writeEntityInfo: WriteEntityInfo,
+        next: Int
+    ){
+        ensurePokemonDatabase().updateDao().loadToDatabase(
+            writeEntityInfo,
+            next
+        )
     }
 
     fun checkNotEmpty(): Boolean {
@@ -94,29 +118,6 @@ class PokemonRoomRepository @Inject constructor(
     }
 
     private fun ensurePokemonDatabase(): PokemonRoomDatabase {
-        return obtainPokemonDatabase(context)
-    }
-
-
-    companion object {
-        private var LOCK = Any()
-
-        @Volatile
-        private var sCommonLibRoomDatabase: PokemonRoomDatabase? = null
-        fun getDatabase(context: Context): PokemonRoomDatabase {
-            return sCommonLibRoomDatabase ?: synchronized(LOCK) {
-                if (sCommonLibRoomDatabase == null) {
-                    sCommonLibRoomDatabase = Room.databaseBuilder(
-                        context,
-                        PokemonRoomDatabase::class.java,
-                        PokemonRoomDatabase.DATABASE_NAME
-                    )
-                        .build()
-                    sCommonLibRoomDatabase
-                } else sCommonLibRoomDatabase
-                sCommonLibRoomDatabase!!
-            }
-        }
-
+        return roomDatabase
     }
 }
