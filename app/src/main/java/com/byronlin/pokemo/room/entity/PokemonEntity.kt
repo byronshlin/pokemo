@@ -12,6 +12,5 @@ data class PokemonEntity(
     @PrimaryKey val id : String,
     val name : String,
     val posterUrl: String,
-    val idOfSpecies: String,
-    @ColumnInfo(name = "captured") var captured: Int
+    val idOfSpecies: String
 )

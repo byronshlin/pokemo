@@ -6,6 +6,7 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.byronlin.pokemo.room.PokemonRoomDatabase
+import com.byronlin.pokemo.room.entity.CaptureEntity
 import com.byronlin.pokemo.room.entity.PokemonEntity
 import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -48,13 +49,17 @@ class PokemonRoomRepository  @Inject constructor(
     }
 
     fun catchPokemon(id: String) {
-        val updateDao = ensurePokemonDatabase().updateDao()
-        updateDao.catchPokemon(id)
+        ensurePokemonDatabase().updateDao().catchPokemon(CaptureEntity(id))
     }
 
     fun releasePokemon(id: String) {
-        val updateDao = ensurePokemonDatabase().updateDao()
-        updateDao.releasePokemon(id)
+        ensurePokemonDatabase().queryDao().queryCaptureEntity(id)?.also {
+            ensurePokemonDatabase().updateDao().releasePokemon(it)
+        }
+    }
+
+    fun queryCaptureListLiveData(): LiveData<List<CaptureEntity>> {
+        return ensurePokemonDatabase().queryDao().queryCaptureListLiveData()
     }
 
     private fun ensurePokemonDatabase(): PokemonRoomDatabase {

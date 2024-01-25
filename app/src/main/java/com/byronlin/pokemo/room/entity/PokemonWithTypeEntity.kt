@@ -5,6 +5,5 @@ data class PokemonWithTypeEntity(
     val name: String,
     val posterUrl: String,
     val idOfSpecies: String,
-    var captured: Int,
-    var type: String,
+    var type: String
 )

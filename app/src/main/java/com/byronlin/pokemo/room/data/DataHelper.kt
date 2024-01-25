@@ -41,8 +41,7 @@ object DataHelper {
                 id = it.id,
                 name = it.name ?: "",
                 posterUrl = it.posterUrl ?: "",
-                idOfSpecies = it.speciesId,
-                0
+                idOfSpecies = it.speciesId
             )
         }
         return WriteEntityInfo(

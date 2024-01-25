@@ -93,9 +93,14 @@ class MainFragment : Fragment() {
             //homeViewModel.initMainViews()
         }
 
-        homeViewModel.newCollectionListLiveData.observe(viewLifecycleOwner) {
+        //homeViewModel.newCollectionListLiveData.observe(viewLifecycleOwner) {
+          //  PKLog.v(TAG, "newCollectionListLiveData refresh: ${it.size}")
+          //  (binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList2(it)
+        //}
+
+        homeViewModel.mainViewUILiveData.observe(viewLifecycleOwner) {
             PKLog.v(TAG, "newCollectionListLiveData refresh: ${it.size}")
-            (binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList2(it)
+            (binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList(it)
         }
     }
 

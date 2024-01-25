@@ -11,6 +11,7 @@ import com.byronlin.pokemo.room.data.DataHelper
 import com.byronlin.pokemo.room.data.PokemonInfo
 import com.byronlin.pokemo.room.data.SpeciesInfo
 import com.byronlin.pokemo.room.data.WriteEntityInfo
+import com.byronlin.pokemo.room.entity.CaptureEntity
 import com.byronlin.pokemo.room.entity.PokemonEntity
 import com.byronlin.pokemo.room.entity.PokemonLoadEntity
 import com.byronlin.pokemo.room.entity.PokemonTypesRelationshipEntity
@@ -63,11 +64,11 @@ interface PokemonUpdateDao {
     @Query("DELETE FROM speciesDescription")
     fun clearSpeciesDescription()
 
-    @Query("UPDATE pokemon SET captured = 1 WHERE id = :id")
-    fun catchPokemon(id: String)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun catchPokemon(captureEntity: CaptureEntity)
 
-    @Query("UPDATE pokemon SET captured = 0 WHERE id = :id")
-    fun releasePokemon(id: String)
+    @Delete
+    fun releasePokemon(captureEntity: CaptureEntity)
 
     fun loadToDatabase(
         pokemonInfoList: List<PokemonInfo>,

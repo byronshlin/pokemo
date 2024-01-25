@@ -2,7 +2,8 @@ package com.byronlin.pokemo.room.entity
 
 import androidx.room.Entity
 
-@Entity(tableName = "capture", primaryKeys = ["id"])
+@Entity(tableName = "capture", primaryKeys = ["idOfPokemon"])
 data class CaptureEntity(
-    val id: String
+    val idOfPokemon: String,
+    val timeStamp: Long = System.currentTimeMillis()
 )

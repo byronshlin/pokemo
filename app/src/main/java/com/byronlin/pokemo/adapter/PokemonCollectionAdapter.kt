@@ -36,9 +36,9 @@ class PokemonCollectionAdapter(
         holder.binding.title.text = collectionItem.type
         holder.binding.count.text = collectionItem.pokemonItemList.size.toString()
         holder.binding.collectionRecyclerView.layoutManager = LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL, false)
-        holder.binding.collectionRecyclerView.adapter = PokemonItemAdapter(onPick, onCapture).apply {
-            this.updateList2(collectionItem.pokemonItemList)
-        }
+        holder.binding.collectionRecyclerView.adapter =
+            PokemonItemAdapter(onPick, onCapture)
+                .apply { this.updateList(collectionItem.pokemonItemList) }
         holder.binding.bottomLine.visibility = if (collectionItem.isMyPokemon) {
             android.view.View.VISIBLE
         } else {

@@ -159,16 +159,19 @@ class RoomPokemonTest {
             Assert.assertEquals(result!!.size, 4)
         }
 
-        db.updateDao().catchPokemon("1")
+        val capturedLiveData = db.queryDao().queryCaptureListLiveData()
+        capturedLiveData.observeForever {
+            println("catchPokemon changed ${it.size}")
+        }
+        db.updateDao().catchPokemon(CaptureEntity("1"))
 
         db.queryDao().queryCapturePokemonList().also { result ->
             Assert.assertNotNull(result)
             Assert.assertEquals(result!!.size, 1)
             Assert.assertEquals(result[0].id, "1")
-            Assert.assertEquals(result[0].captured, 1)
         }
 
-        db.updateDao().releasePokemon("1")
+        db.updateDao().releasePokemon(CaptureEntity("1"))
 
         db.queryDao().queryCapturePokemonList().also { result ->
             Assert.assertNotNull(result)
