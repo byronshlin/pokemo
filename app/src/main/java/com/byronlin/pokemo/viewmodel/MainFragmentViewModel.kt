@@ -41,14 +41,14 @@ class MainFragmentViewModel(
 
     fun initMainViews() {
         viewModelScope.launch {
-            val typeList = withContext(Dispatchers.IO) {
-                pokemonRoomRepository.queryTypes()
-            }
-
-            val visibleTypeList = mutableListOf<String>().apply {
-                add(MY_POKEMON)
-                addAll(typeList)
-            }
+//            val typeList = withContext(Dispatchers.IO) {
+//                pokemonRoomRepository.queryTypes()
+//            }
+//
+//            val sortedTypeList = mutableListOf<String>().apply {
+//                add(MY_POKEMON)
+//                addAll(typeList)
+//            }
             val begin = System.currentTimeMillis()
             val dataMap: Map<String, PokemonCollectionDisplayItem> =
                 generateCollectionsByBatch() //for All
@@ -56,56 +56,33 @@ class MainFragmentViewModel(
                 "MainFragmentViewModel",
                 "generateCollectionsByBatch: spend = ${System.currentTimeMillis() - begin}"
             )
-            val list = visibleTypeList.map {
+            val typeSet = dataMap.keys
+            val sortedTypeList = typeSet.toMutableList().apply {
+                remove(MY_POKEMON)
+                sort()
+            }
+            sortedTypeList.add(0, MY_POKEMON)
+
+            val list = sortedTypeList.map {
                 dataMap[it]
-            }.filterNotNull() ?: arrayListOf()
+            }.filterNotNull()
 
             _TypeAndCollectionMapLiveData.value = dataMap
             _collectionsLiveData.value = list
         }
     }
 
-    private suspend fun generateCollections(context: Context, visibleTypeList: List<String>) =
-        withContext(Dispatchers.IO) {
-            visibleTypeList.let { typeList ->
-                typeList.map { type ->
-                    if (type == MY_POKEMON) {
-                        pokemonRoomRepository.queryCapturePokemonList()
-                            .map {
-                                PokemonDisplayItem(
-                                    it.id, it.name, it.posterUrl,
-                                    it.captured == 1
-                                )
-                            }.let {
-                                Pair(
-                                    type,
-                                    PokemonCollectionDisplayItem(type, it.toMutableList(), true)
-                                )
-                            }
-                    } else {
-                        pokemonRoomRepository.queryPokemonEntityListByType(type)
-                            .map {
-                                PokemonDisplayItem(
-                                    it.id,
-                                    it.name,
-                                    it.posterUrl,
-                                    it.captured == 1
-                                )
-                            }.let {
-                                Pair(
-                                    type,
-                                    PokemonCollectionDisplayItem(type, it.toMutableList(), false)
-                                )
-                            }
-                    }
-                }
-            }.toMap()
-        }
+
+    fun triggerLoad(){
+        val _PokemonTypePairListLiveData = pokemonRoomRepository.queryPokemonTypePairListLiveData()
+    }
+
 
     private suspend fun generateCollectionsByBatch() =
         withContext(Dispatchers.IO) {
             val dataMap: MutableMap<String, PokemonCollectionDisplayItem> = mutableMapOf()
             val list: List<PokemonWithTypeEntity> = pokemonRoomRepository.queryPokemonTypePairList()
+
 
             list.forEach { pokemonWithTypeEntity ->
                 dataMap[pokemonWithTypeEntity.type]?.also { pokemonCollectionDisplayItem ->
@@ -133,7 +110,6 @@ class MainFragmentViewModel(
                     )
                 }
             }
-
             pokemonRoomRepository.queryCapturePokemonList()
                 .map {
                     PokemonDisplayItem(

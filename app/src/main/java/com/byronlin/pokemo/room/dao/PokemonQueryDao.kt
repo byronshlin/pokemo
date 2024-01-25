@@ -8,6 +8,7 @@ import com.byronlin.pokemo.room.entity.PokemonTypesRelationshipEntity
 import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
 import com.byronlin.pokemo.room.entity.SpeciesDescriptionEntity
 import com.byronlin.pokemo.room.entity.SpeciesEntity
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -39,7 +40,6 @@ interface PokemonQueryDao {
 
     @Query("SELECT pokemon.id AS id, pokemon.name AS name, pokemon.posterUrl AS posterUrl, idOfSpecies,  pokemon.captured As captured, pokemonTypesRelationship.type AS type FROM pokemon, pokemonTypesRelationship WHERE pokemon.id = pokemonTypesRelationship.idOfPokemon")
     fun queryPokemonTypePairListLiveData(): LiveData<List<PokemonWithTypeEntity>>
-
 
     @Query("SELECT pokemon.id AS id, pokemon.name AS name, pokemon.posterUrl AS posterUrl, idOfSpecies,  pokemon.captured As captured, pokemonTypesRelationship.type AS type FROM pokemon, pokemonTypesRelationship WHERE pokemon.id = pokemonTypesRelationship.idOfPokemon AND type IN (:types)")
     fun queryPokemonTypePairListByTypes(types: Array<String>): List<PokemonWithTypeEntity>

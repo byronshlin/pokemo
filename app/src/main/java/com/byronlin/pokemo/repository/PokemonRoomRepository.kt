@@ -12,18 +12,7 @@ import com.byronlin.pokemo.room.entity.PokemonWithTypeEntity
 class PokemonRoomRepository(private val application: Application) {
     @WorkerThread
     fun obtainPokemonDatabase(context: Context): PokemonRoomDatabase {
-        if (sCommonLibRoomDatabase == null) {
-            synchronized(LOCK) {
-                if (sCommonLibRoomDatabase == null) {
-                    sCommonLibRoomDatabase = Room.databaseBuilder(
-                        context.applicationContext,
-                        PokemonRoomDatabase::class.java, PokemonRoomDatabase.DATABASE_NAME
-                    ).build()
-                }
-            }
-        }
-
-        return sCommonLibRoomDatabase!!
+        return getDatabase(context)
     }
 
     fun queryTypes(): List<String> {
@@ -69,7 +58,23 @@ class PokemonRoomRepository(private val application: Application) {
 
 
     companion object {
-        private var sCommonLibRoomDatabase: PokemonRoomDatabase? = null
         private var LOCK = Any()
+
+        @Volatile
+        private var sCommonLibRoomDatabase: PokemonRoomDatabase? = null
+        fun getDatabase(context: Context): PokemonRoomDatabase {
+            return sCommonLibRoomDatabase ?: synchronized(LOCK) {
+                if (sCommonLibRoomDatabase == null) {
+                    sCommonLibRoomDatabase = Room.databaseBuilder(
+                        context,
+                        PokemonRoomDatabase::class.java,
+                        PokemonRoomDatabase.DATABASE_NAME)
+                        .build()
+                    sCommonLibRoomDatabase
+                } else sCommonLibRoomDatabase
+                sCommonLibRoomDatabase!!
+            }
+        }
+
     }
 }
