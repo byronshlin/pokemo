@@ -10,6 +10,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
@@ -37,7 +38,6 @@ class MainActivity : AppCompatActivity() {
 
     private val mainActivityViewModel: MainActivityViewModel by viewModels()
 
-    //private val pokemonResourceLoader :PokemonResourceLoader = PokemonResourceLoader()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,18 +45,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         supportActionBar?.hide()
 
-//        val pokemonRoomRepository = PokemonRoomRepository(application)
-//        val pokemonResourceLoader = PokemonResourceLoader(
-//            pokemonRoomRepository,
-//            PokemonNetworkDataSource()
-//        )
-//
-//        @Suppress("UNCHECKED_CAST")
-//        mainActivityViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-//            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-//                return MainActivityViewModel(pokemonResourceLoader) as T
-//            }
-//        }).get(MainActivityViewModel::class.java)
+        mainActivityViewModel.loadStatusLiveData.observe(this) {
+            when (it) {
+                MainActivityViewModel.LoadStatus.START -> {
+                    PKLog.v(TAG, "LoadStatus.START")
+                    binding.progress.visibility = View.VISIBLE
+                }
+                MainActivityViewModel.LoadStatus.FIRST_LOADED -> {
+                    PKLog.v(TAG, "LoadStatus.FIRST_LOADED")
+                    binding.progress.visibility = View.GONE
+                }
+                MainActivityViewModel.LoadStatus.COMPLETE -> {
+                    PKLog.v(TAG, "LoadStatus.COMPLETE")
+                    binding.progress.visibility = View.GONE
+                }
+            }
+        }
         mainActivityViewModel.startLoadAllResource(this.applicationContext)
     }
 

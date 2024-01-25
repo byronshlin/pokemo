@@ -17,6 +17,10 @@ interface PokemonQueryDao {
     @Query("SELECT next FROM pokemon_load ORDER BY lastTimeStamp DESC LIMIT 1")
     fun queryNext(): Int?
 
+
+    @Query("SELECT * FROM pokemon limit 1")
+    fun queryFirstPokemon(): PokemonEntity?
+
     @Query("SELECT * FROM pokemon")
     fun queryPokemonEntityList(): List<PokemonEntity>
 

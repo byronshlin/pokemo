@@ -14,11 +14,17 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PokemonRoomRepository  @Inject constructor(
-    @ApplicationContext private val context: Context) {
+class PokemonRoomRepository @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     @WorkerThread
     fun obtainPokemonDatabase(context: Context): PokemonRoomDatabase {
         return getDatabase(context)
+    }
+
+    fun checkNotEmpty(): Boolean {
+        val queryDao = ensurePokemonDatabase().queryDao()
+        return queryDao.queryFirstPokemon() != null
     }
 
     fun queryTypes(): List<String> {
@@ -42,6 +48,10 @@ class PokemonRoomRepository  @Inject constructor(
     }
 
 
+    fun queryPokemonEntityList(type: String): List<PokemonEntity> {
+        val queryDao = ensurePokemonDatabase().queryDao()
+        return queryDao.queryPokemonEntityListByType(type)
+    }
 
     fun queryPokemonEntityListByType(type: String): List<PokemonEntity> {
         val queryDao = ensurePokemonDatabase().queryDao()
@@ -78,7 +88,8 @@ class PokemonRoomRepository  @Inject constructor(
                     sCommonLibRoomDatabase = Room.databaseBuilder(
                         context,
                         PokemonRoomDatabase::class.java,
-                        PokemonRoomDatabase.DATABASE_NAME)
+                        PokemonRoomDatabase.DATABASE_NAME
+                    )
                         .build()
                     sCommonLibRoomDatabase
                 } else sCommonLibRoomDatabase

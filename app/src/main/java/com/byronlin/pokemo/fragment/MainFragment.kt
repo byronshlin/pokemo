@@ -72,19 +72,6 @@ class MainFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        //TODO hilt!!
-//        val pokemonRoomRepository = PokemonRoomRepository(requireActivity().application)
-//        @Suppress("UNCHECKED_CAST")
-//        homeViewModel = ViewModelProvider(this,
-//            object : ViewModelProvider.NewInstanceFactory() {
-//                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-//                    return MainFragmentViewModel(
-//                        pokemonRoomRepository
-//                    ) as T
-//                }
-//            }
-//        )[MainFragmentViewModel::class.java]
-
         homeViewModel.collectionsLiveData.observe(viewLifecycleOwner) {
             //(binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList(it)
         }
@@ -93,10 +80,6 @@ class MainFragment : Fragment() {
             //homeViewModel.initMainViews()
         }
 
-        //homeViewModel.newCollectionListLiveData.observe(viewLifecycleOwner) {
-          //  PKLog.v(TAG, "newCollectionListLiveData refresh: ${it.size}")
-          //  (binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList2(it)
-        //}
 
         homeViewModel.mainViewUILiveData.observe(viewLifecycleOwner) {
             PKLog.v(TAG, "newCollectionListLiveData refresh: ${it.size}")
