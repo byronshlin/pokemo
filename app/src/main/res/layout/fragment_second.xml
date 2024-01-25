@@ -129,7 +129,9 @@
             app:layout_constraintHorizontal_bias="1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/evolves_from"
-            app:layout_constraintVertical_bias="0" />
+            app:layout_constraintVertical_bias="0"
+            android:background="@drawable/mask_item_pokemon"
+            />
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/evolved_group"
