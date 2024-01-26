@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.byronlin.pokemo.NavGraphDirections
 import com.byronlin.pokemo.adapter.PokemonCollectionAdapter
 import com.byronlin.pokemo.databinding.FragmentMainBinding
+import com.byronlin.pokemo.model.MY_POKEMON
 import com.byronlin.pokemo.utils.PKLog
 import com.byronlin.pokemo.viewmodel.MainFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,7 +51,8 @@ class MainFragment : Fragment() {
     private fun renderView() {
         binding.mainRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.mainRecyclerView.adapter = PokemonCollectionAdapter(::onPick, ::onCapture)
+        binding.mainRecyclerView.adapter =
+            PokemonCollectionAdapter(::onPick, ::onCapture)
     }
 
 
@@ -78,7 +80,7 @@ class MainFragment : Fragment() {
 
         homeViewModel.mainViewUILiveData.observe(viewLifecycleOwner) {
             PKLog.v(TAG, "newCollectionListLiveData refresh: ${it.size}")
-            (binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList(it)
+            (binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList2(it)
         }
     }
 

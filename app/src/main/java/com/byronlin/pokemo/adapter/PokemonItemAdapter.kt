@@ -11,6 +11,7 @@ import com.byronlin.pokemo.databinding.ItemPokemoBinding
 import com.byronlin.pokemo.model.PokemonDisplayItem
 
 class PokemonItemAdapter(
+    private val type: String,
     private val onPick: (String) -> Unit,
     private val onCapture: (String, Boolean) -> Unit
 ) : RecyclerView.Adapter<PokemonItemAdapter.PokemonItemViewHolder>() {
@@ -107,7 +108,7 @@ class PokemonItemAdapter(
                 val oldItemId =
                     oldList.getOrNull(oldItemPosition)?.id
                 val newItemId = newList.getOrNull(newItemPosition)?.id
-                oldItemId != null && oldItemId.equals(newItemId)
+                oldItemId != null && oldItemId == newItemId
             }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
@@ -115,12 +116,8 @@ class PokemonItemAdapter(
                 val oldItemId =
                     oldList.getOrNull(oldItemPosition)?.id
                 val newItemId = newList.getOrNull(newItemPosition)?.id
-                oldItemId != null && oldItemId.equals(newItemId)
+                oldItemId != null && oldItemId == newItemId
             }
-
-        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-            return newList[newItemPosition]
-        }
     }
 
     class PokemonItemViewHolder(val binding: ItemPokemoBinding) :
