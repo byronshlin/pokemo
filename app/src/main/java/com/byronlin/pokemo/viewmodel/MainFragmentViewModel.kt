@@ -34,6 +34,11 @@ class MainFragmentViewModel @Inject constructor(
     private val allDataLiveData: LiveData<List<PokemonWithTypeEntity>> =
         pokemonRoomRepository.queryPokemonTypePairListLiveData()
 
+
+    var cacheRecyclerScrollY = 0
+    var cacheCollectionScrollState : Map<Int, Pair<Int, Int>>? = mutableMapOf()
+
+
     val newCollectionListLiveData: LiveData<List<PokemonCollectionDisplayItem>> =
         allDataLiveData.switchMap {
             val newLiveData: MutableLiveData<List<PokemonCollectionDisplayItem>> = MutableLiveData()

@@ -50,7 +50,7 @@ class MainFragment : Fragment() {
         binding.mainRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.mainRecyclerView.adapter =
-            PokemonCollectionAdapter(::onPick, ::onCapture)
+            PokemonCollectionAdapter(::onPick, ::onCapture, homeViewModel.cacheCollectionScrollState)
     }
 
 
@@ -70,12 +70,23 @@ class MainFragment : Fragment() {
         homeViewModel.mainViewUILiveData.observe(viewLifecycleOwner) {
             PKLog.v(TAG, "newCollectionListLiveData refresh: ${it.size}")
             (binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList2(it)
+            binding.mainRecyclerView.scrollY = homeViewModel.cacheRecyclerScrollY
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         PKLog.v(TAG, "onDestroyView")
+
+        homeViewModel.cacheRecyclerScrollY = binding.mainRecyclerView.scrollY
+        homeViewModel.cacheCollectionScrollState = (binding.mainRecyclerView?.adapter as? PokemonCollectionAdapter)?.onSaveDetailScrollState()
+
         _binding = null
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        homeViewModel.cacheRecyclerScrollY = 0
+        homeViewModel.cacheCollectionScrollState = null
+
     }
 }

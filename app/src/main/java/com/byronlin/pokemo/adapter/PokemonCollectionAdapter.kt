@@ -11,10 +11,17 @@ import com.byronlin.pokemo.model.PokemonCollectionDisplayItem
 
 class PokemonCollectionAdapter(
     private val onPick: (String) -> Unit,
-    private val onCapture: (String, Boolean) -> Unit
+    private val onCapture: (String, Boolean) -> Unit,
+    saveStateMap: Map<Int, Pair<Int, Int>>?
 ) : RecyclerView.Adapter<PokemonCollectionAdapter.PokemonCollectionViewHolder>() {
 
     private var pokemonCollectionList = mutableListOf<PokemonCollectionDisplayItem>()
+
+    private var paddingSaveState: MutableMap<Int, Pair<Int, Int>>? =
+        saveStateMap?.let {
+            mutableMapOf<Int, Pair<Int, Int>>().apply { putAll(it) }
+        }
+
 
     fun updateList(list: List<PokemonCollectionDisplayItem>) {
         pokemonCollectionList = list.toMutableList()
@@ -33,7 +40,9 @@ class PokemonCollectionAdapter(
     }
 
     override fun onBindViewHolder(holder: PokemonCollectionViewHolder, position: Int) {
-        var collectionItem = pokemonCollectionList[position]
+        holder.cachePosition = position
+
+        val collectionItem = pokemonCollectionList[position]
         holder.binding.title.text = collectionItem.type
         holder.binding.count.text = collectionItem.pokemonItemList.size.toString()
         holder.binding.collectionRecyclerView.layoutManager =
@@ -48,6 +57,15 @@ class PokemonCollectionAdapter(
             android.view.View.VISIBLE
         } else {
             android.view.View.GONE
+        }
+
+        val saveState = paddingSaveState?.get(position)
+        paddingSaveState?.remove(position)
+
+        saveState?.run {
+            holder.binding.collectionRecyclerView.scrollToPosition(first)
+            (holder.binding.collectionRecyclerView.layoutManager as? LinearLayoutManager)
+                ?.scrollToPositionWithOffset(first, second)
         }
     }
 
@@ -124,7 +142,72 @@ class PokemonCollectionAdapter(
         }
     }
 
+    var collectionRecyclerView: RecyclerView? = null
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        collectionRecyclerView = recyclerView
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        collectionRecyclerView = null
+    }
+
+
+    override fun onViewRecycled(holder: PokemonCollectionViewHolder) {
+        super.onViewRecycled(holder)
+
+        if (holder.cachePosition != RecyclerView.NO_POSITION) {
+            val savedState = holder.onSaveDetailScrollState()
+            if (paddingSaveState == null) {
+                paddingSaveState = mutableMapOf()
+            }
+            savedState?.also {
+                paddingSaveState?.put(holder.cachePosition, it)
+            }
+        }
+        holder.cachePosition = RecyclerView.NO_POSITION
+    }
+
+    override fun onViewDetachedFromWindow(holder: PokemonCollectionViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        if (holder.cachePosition != RecyclerView.NO_POSITION) {
+            val savedState = holder.onSaveDetailScrollState()
+            if (paddingSaveState == null) {
+                paddingSaveState = mutableMapOf()
+            }
+            savedState?.also {
+                paddingSaveState?.put(holder.cachePosition, it)
+            }
+        }
+        holder.cachePosition = RecyclerView.NO_POSITION
+    }
+
+    fun onSaveDetailScrollState(): Map<Int, Pair<Int, Int>> {
+        val map = mutableMapOf<Int, Pair<Int, Int>>()
+        val size = pokemonCollectionList.size
+        for (pos in 0 until size) {
+            collectionRecyclerView?.findViewHolderForAdapterPosition(pos)?.let {
+                it as? PokemonCollectionViewHolder
+            }?.run {
+                val pair = onSaveDetailScrollState()
+                pair?.also {
+                    map[pos] = it
+                }
+            }
+        }
+        return map
+    }
 
     class PokemonCollectionViewHolder(val binding: ItemPokemoCollectionBinding) :
-        RecyclerView.ViewHolder(binding.root)
+        RecyclerView.ViewHolder(binding.root) {
+            var cachePosition = RecyclerView.NO_POSITION
+        fun onSaveDetailScrollState(): Pair<Int, Int>? {
+            return (binding.collectionRecyclerView.layoutManager as? LinearLayoutManager)?.let {
+                val visibleItemPos = it.findFirstVisibleItemPosition()
+                val offset = it.findViewByPosition(visibleItemPos)?.left ?: 0
+                Pair(visibleItemPos, offset)
+            }
+        }
+    }
 }
