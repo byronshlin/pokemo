@@ -49,7 +49,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        mainActivityViewModel.startLoadAllResource(this.applicationContext)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -76,6 +75,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        mainActivityViewModel.startLoadAllResource(this.applicationContext)
     }
 
     override fun onLocalVoiceInteractionStopped() {
@@ -84,6 +84,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
+        mainActivityViewModel.stopLoad()
         PKLog.v(TAG, "onStop")
     }
 

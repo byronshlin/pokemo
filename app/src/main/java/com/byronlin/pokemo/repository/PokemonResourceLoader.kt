@@ -30,7 +30,9 @@ class PokemonResourceLoader @Inject constructor(
 
     private val BATCH_COUNT = 20
 
-    private val MAX_SIZE = 151
+    //If MAX_SIZE = Integer.MAX_VALUE, this loader can download all pokemon data into local
+    private val MAX_SIZE = 151//Integer.MAX_VALUE
+    private val BATCH_LOAD_INTERVAl_MS = 500L
 
     @Volatile
     private var stop = false
@@ -40,17 +42,15 @@ class PokemonResourceLoader @Inject constructor(
 
     fun stop() {
         stop = true
+        isGoing =false
     }
 
     fun startLoadResourceToLocalAsFlow() = flow {
         if (isGoing) {
             return@flow
         }
+        stop = false
         do {
-            if (stop) {
-                emit(-1)
-                break
-            }
             isGoing = true
             PKLog.v(TAG, "startLoadResourceToLocalAsFlow  obtainPokemonDatabase")
             val offset = pokemonRoomRepository.queryNext()
@@ -79,7 +79,7 @@ class PokemonResourceLoader @Inject constructor(
             } else {
                 emit(next)
             }
-            delay(1000)
+            delay(BATCH_LOAD_INTERVAl_MS)
         } while (true)
         isGoing = false
     }.flowOn(Dispatchers.IO)

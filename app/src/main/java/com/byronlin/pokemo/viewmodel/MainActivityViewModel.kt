@@ -10,6 +10,7 @@ import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.utils.PKLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -28,7 +29,7 @@ class MainActivityViewModel @Inject constructor(
     val loadStatusLiveData: LiveData<LoadStatus> = _loadStatusLiveData
 
     fun startLoadAllResource(context: Context) {
-        viewModelScope.launch {
+        val job = viewModelScope.launch {
             _loadStatusLiveData.postValue(LoadStatus.START)
 
             val hasData = withContext(Dispatchers.IO) {
@@ -50,6 +51,17 @@ class MainActivityViewModel @Inject constructor(
                 }
             }
         }
+//        job.invokeOnCompletion {
+//            pokemonResourceLoader.stop()
+//        }
+    }
+
+    fun stopLoad(){
+        pokemonResourceLoader.stop()
+    }
+    override fun onCleared() {
+        super.onCleared()
+        PKLog.v(TAG, "onCleared")
     }
 
     enum class LoadStatus {
