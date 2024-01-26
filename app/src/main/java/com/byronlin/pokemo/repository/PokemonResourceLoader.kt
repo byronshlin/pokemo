@@ -1,6 +1,5 @@
 package com.byronlin.pokemo.repository
 
-import android.content.Context
 import android.net.Uri
 import androidx.annotation.WorkerThread
 import com.byronlin.pokemo.datasource.PokemonNetworkDataSource
@@ -36,13 +35,23 @@ class PokemonResourceLoader @Inject constructor(
     @Volatile
     private var stop = false
 
+    private var isGoing = false
+
 
     fun stop() {
         stop = true
     }
 
-    fun startLoadResourceToLocalAsFlow(context: Context) = flow {
+    fun startLoadResourceToLocalAsFlow() = flow {
+        if (isGoing) {
+            return@flow
+        }
         do {
+            if (stop) {
+                emit(-1)
+                break
+            }
+            isGoing = true
             PKLog.v(TAG, "startLoadResourceToLocalAsFlow  obtainPokemonDatabase")
             val offset = pokemonRoomRepository.queryNext()
 
@@ -72,6 +81,7 @@ class PokemonResourceLoader @Inject constructor(
             }
             delay(1000)
         } while (true)
+        isGoing = false
     }.flowOn(Dispatchers.IO)
 
 
@@ -112,6 +122,13 @@ class PokemonResourceLoader @Inject constructor(
         PKLog.v(TAG, "queryPokemonResources: ${System.currentTimeMillis() - begin}")
 
         pokemonResource ?: return@withContext null
+
+        // no more data
+        if(pokemonResource.next == null &&
+            pokemonResource.results.isEmpty()
+        ){
+            return@withContext null
+        }
 
         val pokemonIdList: List<String> =
             pokemonResource.results.map { it.url.let { Uri.parse(it) }?.lastPathSegment }

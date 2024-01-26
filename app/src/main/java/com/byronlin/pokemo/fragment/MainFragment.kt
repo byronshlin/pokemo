@@ -24,8 +24,6 @@ class MainFragment : Fragment() {
     private val TAG = "MainFragment"
     private var _binding: FragmentMainBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     private val homeViewModel: MainFragmentViewModel by viewModels()
@@ -69,15 +67,6 @@ class MainFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        homeViewModel.collectionsLiveData.observe(viewLifecycleOwner) {
-            //(binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList(it)
-        }
-
-        homeViewModel.loadCompleteLiveData.observe(viewLifecycleOwner) {
-            //homeViewModel.initMainViews()
-        }
-
-
         homeViewModel.mainViewUILiveData.observe(viewLifecycleOwner) {
             PKLog.v(TAG, "newCollectionListLiveData refresh: ${it.size}")
             (binding.mainRecyclerView.adapter as PokemonCollectionAdapter).updateList2(it)
