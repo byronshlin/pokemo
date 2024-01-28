@@ -53,13 +53,6 @@ class DetailsFragment : Fragment() {
     }
 
     private fun initViewModel() {
-//        @Suppress("UNCHECKED_CAST")
-//        detailViewModel = ViewModelProvider(this, object:ViewModelProvider.NewInstanceFactory(){
-//            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-//                return DetailViewModel(PokemonRoomRepository(requireActivity().application)) as T
-//            }
-//        })[DetailViewModel::class.java]
-
         detailViewModel.pokemonDetailLiveData.observe(viewLifecycleOwner) {
             renderView(it)
         }

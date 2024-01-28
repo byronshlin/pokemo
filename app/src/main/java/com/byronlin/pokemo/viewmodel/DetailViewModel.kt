@@ -18,7 +18,6 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(private val roomHelper: PokemonRoomRepository) :
     ViewModel() {
     private val _idLiveData: MutableLiveData<String> = MutableLiveData()
-    val idLiveData: LiveData<String> = _idLiveData
 
     val pokemonDetailLiveData: LiveData<PokemonDetails> = _idLiveData.switchMap {
         val liveData: MutableLiveData<PokemonDetails> = MutableLiveData()
@@ -37,8 +36,6 @@ class DetailViewModel @Inject constructor(private val roomHelper: PokemonRoomRep
         id: String
     ): PokemonDetails {
         val details: PokemonDetails = withContext(Dispatchers.IO) {
-
-
             val pokemonEntity: PokemonEntity? = roomHelper.queryPokemonEntityById(id)
             pokemonEntity?.let {
                 val speciesEntity =

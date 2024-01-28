@@ -60,11 +60,6 @@ class MainFragmentViewModel @Inject constructor(
     val mainViewUILiveData: MediatorLiveData<List<PokemonCollectionDisplayItem>> =
         MediatorLiveData()
 
-
-    private val _collectionsLiveData: MutableLiveData<List<PokemonCollectionDisplayItem>> =
-        MutableLiveData()
-
-
     init {
 
         mainViewUILiveData.addSource(newCollectionListLiveData) {
@@ -79,21 +74,6 @@ class MainFragmentViewModel @Inject constructor(
             }
         }
     }
-
-    fun initMainViews() {
-        viewModelScope.launch {
-            val begin = System.currentTimeMillis()
-            val dataMap: Map<String, PokemonCollectionDisplayItem> =
-                generateCollectionsByBatch() //for All
-            PKLog.v(
-                "MainFragmentViewModel",
-                "generateCollectionsByBatch: spend = ${System.currentTimeMillis() - begin}"
-            )
-            val collectionList = transferAllDataMapToCollectionList(dataMap)
-            _collectionsLiveData.value = collectionList
-        }
-    }
-
 
     private fun transferAllDataMapToCollectionList(dataMap: Map<String, PokemonCollectionDisplayItem>): List<PokemonCollectionDisplayItem> {
         val typeSet = dataMap.keys
@@ -164,14 +144,6 @@ class MainFragmentViewModel @Inject constructor(
         return capturedPokemonCollection
     }
 
-    private suspend fun generateCollectionsByBatch() =
-        withContext(Dispatchers.IO) {
-            val dataMap = generateAllDataMap(pokemonRoomRepository.queryPokemonTypePairList())
-            val capturedPokemonCollection = generatePokemonDisplayItem()
-            dataMap[MY_POKEMON] = capturedPokemonCollection
-            return@withContext dataMap
-        }
-
     fun catchPokemon(context: Context, id: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -187,8 +159,6 @@ class MainFragmentViewModel @Inject constructor(
             }
         }
     }
-
-
     private suspend fun updateMyPocket(
         originalList: List<PokemonCollectionDisplayItem>
     ) = withContext(Dispatchers.IO) {

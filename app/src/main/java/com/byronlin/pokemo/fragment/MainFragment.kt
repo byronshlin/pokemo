@@ -41,7 +41,6 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
-        renderView()
     }
 
     private fun initView() {
@@ -50,11 +49,6 @@ class MainFragment : Fragment() {
         binding.mainRecyclerView.adapter =
             PokemonCollectionAdapter(::onPick, ::onCapture, homeViewModel.cacheCollectionScrollState)
     }
-
-    private fun renderView(){
-        homeViewModel
-    }
-
 
     private fun onPick(id: String) {
         findNavController().navigate(NavGraphDirections.actionToDetailFragment(id))
