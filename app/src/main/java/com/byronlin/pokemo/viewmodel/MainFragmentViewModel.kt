@@ -36,10 +36,10 @@ class MainFragmentViewModel @Inject constructor(
 
 
     var cacheRecyclerScrollY = 0
-    var cacheCollectionScrollState : Map<Int, Pair<Int, Int>>? = mutableMapOf()
+    var cacheCollectionScrollState : Map<String, Pair<Int, Int>>? = mutableMapOf()
 
 
-    val newCollectionListLiveData: LiveData<List<PokemonCollectionDisplayItem>> =
+    private val newCollectionListLiveData: LiveData<List<PokemonCollectionDisplayItem>> =
         allDataLiveData.switchMap {
             val newLiveData: MutableLiveData<List<PokemonCollectionDisplayItem>> = MutableLiveData()
             viewModelScope.launch {
@@ -63,16 +63,6 @@ class MainFragmentViewModel @Inject constructor(
 
     private val _collectionsLiveData: MutableLiveData<List<PokemonCollectionDisplayItem>> =
         MutableLiveData()
-
-
-    val collectionsLiveData: LiveData<List<PokemonCollectionDisplayItem>> = _collectionsLiveData
-
-
-    private val _loadCompleteLiveData: MutableLiveData<Boolean> = MutableLiveData()
-
-    val loadCompleteLiveData: LiveData<Boolean> = _loadCompleteLiveData
-
-    private var isLoading = false
 
 
     init {

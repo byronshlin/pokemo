@@ -33,7 +33,7 @@ class MainFragment : Fragment() {
     ): View? {
         PKLog.v(TAG, "onCreateView")
         _binding = FragmentMainBinding.inflate(inflater, container, false)
-        renderView()
+        initView()
         return binding.root
 
     }
@@ -41,16 +41,18 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
-        //homeViewModel.initMainViews()
-        //homeViewModel.startLoadResource(requireContext(), false)
-
+        renderView()
     }
 
-    private fun renderView() {
+    private fun initView() {
         binding.mainRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.mainRecyclerView.adapter =
             PokemonCollectionAdapter(::onPick, ::onCapture, homeViewModel.cacheCollectionScrollState)
+    }
+
+    private fun renderView(){
+        homeViewModel
     }
 
 
