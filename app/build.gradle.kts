@@ -60,7 +60,6 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
     implementation("com.github.bumptech.glide:glide:4.11.0")
@@ -68,6 +67,11 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
     kapt("com.github.bumptech.glide:compiler:4.11.0")
+
+
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
+    debugImplementation("androidx.fragment:fragment-testing:$1.6.2")
+
 
 
     //network
@@ -89,6 +93,7 @@ dependencies {
     // CoRoutine
     val coroutine_version ="1.6.4"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutine_version}")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_version")
 
     // RxJava
     val rxandroid_version ="3.0.2"

@@ -8,17 +8,20 @@ import androidx.lifecycle.viewModelScope
 import com.byronlin.pokemo.model.PokemonDetails
 import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.room.entity.PokemonEntity
+import com.byronlin.pokemo.utils.PKLog
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailViewModel @Inject constructor(private val roomHelper: PokemonRoomRepository) :
-    ViewModel() {
-    private val _idLiveData: MutableLiveData<String> = MutableLiveData()
+class DetailViewModel @Inject constructor(private val roomHelper: PokemonRoomRepository,) : ViewModel() {
+    private val TAG = "DetailViewModel"
 
+
+    private val _idLiveData: MutableLiveData<String> = MutableLiveData()
     val pokemonDetailLiveData: LiveData<PokemonDetails> = _idLiveData.switchMap {
         val liveData: MutableLiveData<PokemonDetails> = MutableLiveData()
         viewModelScope.launch {
@@ -72,5 +75,11 @@ class DetailViewModel @Inject constructor(private val roomHelper: PokemonRoomRep
             )
         }
         return details
+    }
+
+
+    override fun onCleared() {
+        super.onCleared()
+        PKLog.v(TAG, "onCleared")
     }
 }

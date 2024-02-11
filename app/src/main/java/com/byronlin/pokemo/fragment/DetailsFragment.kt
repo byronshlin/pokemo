@@ -1,5 +1,6 @@
 package com.byronlin.pokemo.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +30,47 @@ class DetailsFragment : Fragment() {
     private val detailViewModel: DetailViewModel by viewModels()
     private val args: DetailsFragmentArgs by navArgs()
 
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        PKLog.v(TAG, "onAttach")
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        PKLog.v(TAG, "onCreate")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        PKLog.v(TAG, "onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        PKLog.v(TAG, "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        PKLog.v(TAG, "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        PKLog.v(TAG, "onStop")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        PKLog.v(TAG, "onDestroy")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        PKLog.v(TAG, "onDetach")
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,6 +88,7 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        PKLog.v(TAG, "onCreateView")
         initViewModel()
         args.pokemonId.let {
             detailViewModel.queryPokemonDetail(it ?: "")
@@ -86,6 +129,7 @@ class DetailsFragment : Fragment() {
             textView.text = it
             binding.typeBox.addView(textView)
         }
+
     }
 
     override fun onDestroyView() {

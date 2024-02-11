@@ -1,5 +1,6 @@
 package com.byronlin.pokemo.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,11 +36,11 @@ class MainFragment : Fragment() {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         initView()
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        PKLog.v(TAG, "onViewCreated")
         initViewModel()
     }
 
@@ -70,6 +71,36 @@ class MainFragment : Fragment() {
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        PKLog.v(TAG, "onAttach")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        PKLog.v(TAG, "onDetach")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        PKLog.v(TAG, "onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        PKLog.v(TAG, "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        PKLog.v(TAG, "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        PKLog.v(TAG, "onStop")
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         PKLog.v(TAG, "onDestroyView")
@@ -81,6 +112,7 @@ class MainFragment : Fragment() {
     }
     override fun onDestroy() {
         super.onDestroy()
+        PKLog.v(TAG, "onDestroy")
         homeViewModel.cacheRecyclerScrollY = 0
         homeViewModel.cacheCollectionScrollState = null
 
