@@ -3,8 +3,8 @@ package com.byronlin.pokemo.hilt
 import android.content.Context
 import androidx.room.Room
 import com.byronlin.pokemo.datasource.PokemonNetworkDataSource
-import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.room.PokemonRoomDatabase
+import com.byronlin.pokemo.viewmodel.ViewModelDispatcherProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,6 +21,15 @@ object AppModule {
 //    fun providePokemonRoomRepository(@ApplicationContext context: Context): PokemonRoomRepository {
 //        return PokemonRoomRepository(context)
 //    }
+
+
+    @Provides
+    @Singleton
+    fun provideViewModelDispatcherProvider(): ViewModelDispatcherProvider {
+        return object : ViewModelDispatcherProvider {
+            override fun getDispatcher() = kotlinx.coroutines.Dispatchers.IO
+        }
+    }
 
     @Provides
     @Singleton
@@ -51,5 +60,6 @@ object AppModule {
             sCommonLibRoomDatabase!!
         }
     }
+
 
 }

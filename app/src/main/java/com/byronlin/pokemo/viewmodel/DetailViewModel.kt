@@ -3,12 +3,18 @@ package com.byronlin.pokemo.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.byronlin.pokemo.PokemonApplication
 import com.byronlin.pokemo.model.PokemonDetails
 import com.byronlin.pokemo.repository.PokemonRoomRepository
 import com.byronlin.pokemo.room.entity.PokemonEntity
 import com.byronlin.pokemo.utils.PKLog
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +23,10 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailViewModel @Inject constructor(private val roomHelper: PokemonRoomRepository,) : ViewModel() {
+class DetailViewModel @Inject constructor(
+    private val roomHelper: PokemonRoomRepository,
+    private val dispatcherProvider: ViewModelDispatcherProvider
+    ) : ViewModel() {
     private val TAG = "DetailViewModel"
 
 
@@ -38,7 +47,7 @@ class DetailViewModel @Inject constructor(private val roomHelper: PokemonRoomRep
     private suspend fun generatePokemonDetails(
         id: String
     ): PokemonDetails {
-        val details: PokemonDetails = withContext(Dispatchers.IO) {
+        val details: PokemonDetails = withContext(dispatcherProvider.getDispatcher()) {
             val pokemonEntity: PokemonEntity? = roomHelper.queryPokemonEntityById(id)
             pokemonEntity?.let {
                 val speciesEntity =
@@ -82,4 +91,5 @@ class DetailViewModel @Inject constructor(private val roomHelper: PokemonRoomRep
         super.onCleared()
         PKLog.v(TAG, "onCleared")
     }
+
 }

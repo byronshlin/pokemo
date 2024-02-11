@@ -8,6 +8,8 @@ import com.byronlin.pokemo.room.entity.SpeciesEntity
 import com.byronlin.pokemo.test.MainDispatcherRule
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
@@ -27,7 +29,12 @@ class DetailViewModelTest {
     @Test
     fun queryPokemonDetail() = runTest{
         val repository = mockPokemonRoomRepository()
-        val viewModel = DetailViewModel(repository)
+        val viewModel = DetailViewModel(repository,
+           object : ViewModelDispatcherProvider{
+               override fun getDispatcher(): CoroutineDispatcher {
+                   return mainDispatcherRule.testDispatcher
+               }
+           })
 
         viewModel.pokemonDetailLiveData.observeForever {
 
@@ -43,8 +50,6 @@ class DetailViewModelTest {
         assertNotNull(fromPokemon)
         assertEquals("2", fromPokemon?.id)
         assertEquals("mouse", fromPokemon?.name)
-
-
     }
 
 
