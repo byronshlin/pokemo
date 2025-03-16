@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
@@ -18,6 +21,7 @@ import com.byronlin.pokemo.model.PokemonDetails
 import com.byronlin.pokemo.utils.PKLog
 import com.byronlin.pokemo.viewmodel.DetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -79,7 +83,7 @@ class DetailsFragment : Fragment() {
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
 
         binding.fromPokemonImage.setOnClickListener {
-            detailViewModel.pokemonDetailLiveData.value?.evolvedPokemon?.id?.let {
+            detailViewModel.getPokemonDetails()?.evolvedPokemon?.id?.let {
                 findNavController().navigate(NavGraphDirections.actionToDetailFragment(it))
             }
         }
@@ -88,7 +92,7 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        PKLog.v(TAG, "onCreateView")
+        PKLog.v(TAG, "onViewCreated")
         initViewModel()
         args.pokemonId.let {
             detailViewModel.queryPokemonDetail(it ?: "")
@@ -96,8 +100,13 @@ class DetailsFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        detailViewModel.pokemonDetailLiveData.observe(viewLifecycleOwner) {
-            renderView(it)
+        viewLifecycleOwner.lifecycleScope.launch {
+            detailViewModel.pokemonDetailStateFlow.collect {it->
+                PKLog.v(TAG, "newCollectionListLiveData refresh: ${it?.id}")
+                if (it != null) {
+                    renderView(it)
+                }
+            }
         }
     }
 

@@ -18,6 +18,14 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -29,24 +37,28 @@ class DetailViewModel @Inject constructor(
     ) : ViewModel() {
     private val TAG = "DetailViewModel"
 
-
-    private val _idLiveData: MutableLiveData<String> = MutableLiveData()
-    val pokemonDetailLiveData: LiveData<PokemonDetails> = _idLiveData.switchMap {
-        val liveData: MutableLiveData<PokemonDetails> = MutableLiveData()
-        viewModelScope.launch {
-            val details = generatePokemonDetails(it)
-            liveData.postValue(details)
-        }
-        liveData
-    }
+    private val _idStateFlow = MutableStateFlow<String?>(null)
+    val pokemonDetailStateFlow : StateFlow<PokemonDetails?> = _idStateFlow.filterNotNull().flatMapLatest { id->
+        flow {
+            emit(generatePokemonDetails(id))
+        }.flowOn(Dispatchers.IO)
+    }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(), null)
 
     fun queryPokemonDetail(id: String) {
-        _idLiveData.value = id
+        viewModelScope.launch {
+            _idStateFlow.emit(id)
+        }
+    }
+
+
+    fun getPokemonDetails(): PokemonDetails? {
+        return pokemonDetailStateFlow.value
     }
 
     private suspend fun generatePokemonDetails(
         id: String
     ): PokemonDetails {
+        PKLog.v(TAG, "generatePokemonDetails id: $id")
         val details: PokemonDetails = withContext(dispatcherProvider.getDispatcher()) {
             val pokemonEntity: PokemonEntity? = roomHelper.queryPokemonEntityById(id)
             pokemonEntity?.let {
@@ -91,5 +103,4 @@ class DetailViewModel @Inject constructor(
         super.onCleared()
         PKLog.v(TAG, "onCleared")
     }
-
 }
