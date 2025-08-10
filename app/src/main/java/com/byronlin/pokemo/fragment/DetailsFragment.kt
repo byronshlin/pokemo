@@ -21,6 +21,8 @@ import com.byronlin.pokemo.model.PokemonDetails
 import com.byronlin.pokemo.utils.PKLog
 import com.byronlin.pokemo.viewmodel.DetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 
@@ -37,49 +39,49 @@ class DetailsFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        PKLog.v(TAG, "onAttach")
+        PKLog.v(TAG, "onAttach  ${args.pokemonId}")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        PKLog.v(TAG, "onCreate")
+        PKLog.v(TAG, "onCreate  ${args.pokemonId}")
     }
 
     override fun onStart() {
         super.onStart()
-        PKLog.v(TAG, "onStart")
+        PKLog.v(TAG, "onStart  ${args.pokemonId}")
     }
 
     override fun onResume() {
         super.onResume()
-        PKLog.v(TAG, "onResume")
+        PKLog.v(TAG, "onResume  ${args.pokemonId}")
     }
 
     override fun onPause() {
         super.onPause()
-        PKLog.v(TAG, "onPause")
+        PKLog.v(TAG, "onPause  ${args.pokemonId}")
     }
 
     override fun onStop() {
         super.onStop()
-        PKLog.v(TAG, "onStop")
+        PKLog.v(TAG, "onStop  ${args.pokemonId}")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        PKLog.v(TAG, "onDestroy")
+        PKLog.v(TAG, "onDestroy  ${args.pokemonId}")
     }
 
     override fun onDetach() {
         super.onDetach()
-        PKLog.v(TAG, "onDetach")
+        PKLog.v(TAG, "onDetach  ${args.pokemonId}")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        PKLog.v(TAG, "onCreateView")
+        PKLog.v(TAG, "onCreateView  ${args.pokemonId}")
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
 
         binding.fromPokemonImage.setOnClickListener {
@@ -92,7 +94,7 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        PKLog.v(TAG, "onViewCreated")
+        PKLog.v(TAG, "onViewCreated ${args.pokemonId}")
         initViewModel()
         args.pokemonId.let {
             detailViewModel.queryPokemonDetail(it ?: "")
@@ -100,13 +102,21 @@ class DetailsFragment : Fragment() {
     }
 
     private fun initViewModel() {
+        PKLog.v(TAG, "initViewModel ${args.pokemonId}")
         viewLifecycleOwner.lifecycleScope.launch {
-            detailViewModel.pokemonDetailStateFlow.collect {it->
-                PKLog.v(TAG, "newCollectionListLiveData refresh: ${it?.id}")
-                if (it != null) {
-                    renderView(it)
-                }
+            PKLog.v(TAG, "pokemonDetailStateFlow repeatOnLifecycle ${args.pokemonId}")
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                PKLog.v(TAG, "pokemonDetailStateFlow collect ${args.pokemonId}")
+                detailViewModel.pokemonDetailStateFlow.onEach { it ->
+                    PKLog.v(TAG, "newCollectionListLiveData refresh: ${it?.id}")
+                    if (it != null) {
+                        renderView(it)
+                    }
+                }.launchIn(this)
+                PKLog.v(TAG, "pokemonDetailStateFlow collect END  ${args.pokemonId}")
             }
+            PKLog.v(TAG, "pokemonDetailStateFlow repeatOnLifecycle END ${args.pokemonId}")
         }
     }
 
@@ -134,7 +144,7 @@ class DetailsFragment : Fragment() {
         }
         details.typeList.forEach {
             val textView = View.inflate(requireContext(), R.layout.label_type, null) as
-                    TextView
+                TextView
             textView.text = it
             binding.typeBox.addView(textView)
         }
@@ -143,7 +153,7 @@ class DetailsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        PKLog.v(TAG, "onDestroyView")
+        PKLog.v(TAG, "onDestroyView  ${args.pokemonId}")
         _binding = null
     }
 }

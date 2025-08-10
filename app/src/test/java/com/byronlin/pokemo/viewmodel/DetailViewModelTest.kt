@@ -36,11 +36,8 @@ class DetailViewModelTest {
                }
            })
 
-        viewModel.pokemonDetailLiveData.observeForever {
-
-        }
         viewModel.queryPokemonDetail("1")
-        var pokemonDetails = viewModel.pokemonDetailLiveData.value
+        var pokemonDetails = viewModel.pokemonDetailStateFlow.value
         assertNotNull(pokemonDetails)
         assertEquals("1", pokemonDetails?.id)
         assertEquals("pikachu", pokemonDetails?.name)
