@@ -37,6 +37,7 @@ class PokemonResourceLoader @Inject constructor(
     @Volatile
     private var stop = false
 
+    @Volatile
     private var isGoing = false
 
 

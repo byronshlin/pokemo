@@ -17,8 +17,9 @@ import javax.inject.Singleton
 
 @Singleton
 class PokemonNetworkDataSource @Inject constructor() {
+    private val okHttpClient: OkHttpClient by lazy { createOkHttpClient() }
+    private val retrofit: Retrofit by lazy { createRetrofit() }
     fun queryPokemonResources(offset: Int, limit: Int): NamedAPIResourceList? {
-        val retrofit = obtainRetrofit()
         return (try {
             retrofit.create(PokemonApiService::class.java).getPokemonResources(offset, limit)
                 .execute()
@@ -29,7 +30,6 @@ class PokemonNetworkDataSource @Inject constructor() {
     }
 
     fun queryPokemon(id: String): PokemonResponse? {
-        val retrofit = obtainRetrofit()
         return (try {
             retrofit.create(PokemonApiService::class.java).getPokemon(id).execute()
         } catch (e: Exception) {
@@ -38,7 +38,6 @@ class PokemonNetworkDataSource @Inject constructor() {
     }
 
     fun querySpecies(id: String): SpeciesResponse? {
-        val retrofit = obtainRetrofit()
         return (try {
             retrofit.create(PokemonApiService::class.java).getPokemonSpecies(id).execute()
         } catch (e: Exception) {
@@ -47,47 +46,27 @@ class PokemonNetworkDataSource @Inject constructor() {
     }
 
 
-    private fun obtainRetrofit(): Retrofit {
-        if (sRetrofit == null) {
-            sRetrofit = Retrofit.Builder()
-                .baseUrl("https://pokeapi.co/api/v2/")
-                .client(getOAuthOkHttpClient())
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava3CallAdapterFactory.create()) // 支持RxJava
-                .build()
-        }
-        return sRetrofit!!
+    private fun createRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://pokeapi.co/api/v2/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+            .build()
     }
 
-
-    private fun getOAuthOkHttpClient(): OkHttpClient {
-        if (sOkhttpClient == null) {
-            sOkhttpClient = OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor(
-                    object : HttpLoggingInterceptor.Logger {
-                        override fun log(message: String) {
-                            Log.d("PKLog", "CP_OKHTTP $message")
-                        }
+    private fun createOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor(
+                object : HttpLoggingInterceptor.Logger {
+                    override fun log(message: String) {
+                        Log.d("PKLog", "CP_OKHTTP $message")
                     }
-                ).apply {
-                    level = HttpLoggingInterceptor.Level.NONE
-                })
-//                .addInterceptor { chain ->
-//                    val original = chain.request()
-//                    val requestBuilder = original.newBuilder()
-//                        .header("Authorization", "Bearer " + "token")
-//                        .method(original.method(), original.body())
-//                    val request = requestBuilder.build()
-//                    chain.proceed(request)
-//                }
-                .build()
-        }
-        return sOkhttpClient!!
-    }
-
-    companion object {
-        private var sOkhttpClient: OkHttpClient? = null
-        private var sRetrofit: Retrofit? = null
+                }
+            ).apply {
+                level = HttpLoggingInterceptor.Level.NONE
+            })
+            .build()
     }
 
 
