@@ -41,6 +41,7 @@ class MainActivityViewModel @Inject constructor(
             }
 
             val flow = pokemonResourceLoader.startLoadResourceToLocalAsFlow()
+
             flow.collect { offset ->
                 PKLog.v(TAG, "startLoadAllResource: emit!! = ${offset}")
 
